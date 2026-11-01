@@ -5,13 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>सारथी - Saarthi</title>
   
-  <!-- Mobile App PWA Settings -->
+  <!-- Standalone Mobile App PWA Manifest -->
   <meta name="theme-color" content="#ea580c">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="mobile-web-app-capable" content="yes">
   <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
   <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+  <link rel="manifest" href='data:application/manifest+json,{"name":"सारथी - Saarthi","short_name":"सारथी","start_url":".","display":"standalone","background_color":"#ea580c","theme_color":"#ea580c","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3135/3135715.png","sizes":"512x512","type":"image/png"}]}'>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -133,7 +134,7 @@
   </div>
 
   <script>
-    const SB_URL = "https://ibpnufoxjfltsvlzfogo.supabase.co/rest/v1";
+    const SB_BASE = "https://ibpnufoxjfltsvlzfogo.supabase.co/rest/v1";
     const SB_KEY = "sb_publishable_JEjjvn_IzsxDMffCbluyaw_A-a2JWSV";
 
     let currentLang = 'hi';
@@ -251,6 +252,15 @@
       });
     }
 
+    // ऑटो-डिटेक्ट टेबल (Orders vs orders)
+    async function getOrdersUrl() {
+      let res = await fetch(`${SB_BASE}/Orders?select=id&limit=1`, {
+        headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+      });
+      if(res.ok) return `${SB_BASE}/Orders`;
+      return `${SB_BASE}/orders`;
+    }
+
     async function createOrder() {
       const name = document.getElementById('cName').value.trim();
       let phone = document.getElementById('cPhone').value.trim();
@@ -259,7 +269,7 @@
       const readyDate = document.getElementById('cReadyDateTime').value;
 
       if(!name || !details) {
-        alert(currentLang === 'hi' ? "कृपया नाम और विवरण लिखें!" : "Please enter name and details!");
+        alert(currentLang === 'hi' ? "कृपया ग्राहक का नाम और काम का विवरण भरें!" : "Please enter name and details!");
         return;
       }
 
@@ -274,7 +284,8 @@
       btn.disabled = true;
 
       try {
-        const res = await fetch(`${SB_URL}/orders`, {
+        const targetUrl = await getOrdersUrl();
+        const res = await fetch(targetUrl, {
           method: 'POST',
           headers: {
             'apikey': SB_KEY,
@@ -314,10 +325,10 @@
 
           fetchOrders();
         } else {
-          alert("Error saving order");
+          alert("डेटाबेस में सेव नहीं हुआ।");
         }
       } catch(err) {
-        alert("Error: " + err.message);
+        alert("एरर: " + err.message);
       } finally {
         btn.innerHTML = `<i class="fa-brands fa-whatsapp text-xl"></i><span id="btnSaveText">${translations[currentLang].saveBtn}</span>`;
         btn.disabled = false;
@@ -327,7 +338,8 @@
     async function fetchOrders() {
       const t = translations[currentLang];
       try {
-        const res = await fetch(`${SB_URL}/orders?status=neq.completed&order=id.desc`, {
+        const targetUrl = await getOrdersUrl();
+        const res = await fetch(`${targetUrl}?status=neq.completed&order=id.desc`, {
           headers: {
             'apikey': SB_KEY,
             'Authorization': `Bearer ${SB_KEY}`
@@ -335,9 +347,16 @@
         });
         const orders = await res.json();
         const container = document.getElementById('ordersContainer');
+        
+        if(!Array.isArray(orders)) {
+          document.getElementById('orderCount').innerText = '0';
+          container.innerHTML = `<div class="text-center py-8 bg-white rounded-2xl border border-dashed border-gray-200 text-gray-400 text-sm">${t.noOrders}</div>`;
+          return;
+        }
+
         document.getElementById('orderCount').innerText = orders.length;
 
-        if(!orders || orders.length === 0) {
+        if(orders.length === 0) {
           container.innerHTML = `<div class="text-center py-8 bg-white rounded-2xl border border-dashed border-gray-200 text-gray-400 text-sm">${t.noOrders}</div>`;
           return;
         }
@@ -398,7 +417,8 @@
     }
 
     async function markDone(id) {
-      await fetch(`${SB_URL}/orders?id=eq.${id}`, {
+      const targetUrl = await getOrdersUrl();
+      await fetch(`${targetUrl}?id=eq.${id}`, {
         method: 'PATCH',
         headers: {
           'apikey': SB_KEY,
