@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>सारथी - Saarthi</title>
+  
+  <!-- Mobile App PWA Settings -->
+  <meta name="theme-color" content="#ea580c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans pb-20 select-none">
+
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 text-white p-4 shadow-lg sticky top-0 z-50">
+    <div class="flex justify-between items-center max-w-md mx-auto">
+      <div>
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl font-black tracking-wide">सारथी</span>
+          <span class="text-[10px] bg-black bg-opacity-30 px-2 py-0.5 rounded-full font-medium tracking-wider uppercase">Saarthi</span>
+        </div>
+        <p class="text-[11px] text-orange-100 font-medium tracking-tight">
+          Powered by <span class="font-bold text-white underline">eevaan benchers</span>
+        </p>
+      </div>
+      
+      <div class="flex items-center space-x-2">
+        <button onclick="toggleLanguage()" class="text-xs bg-white text-orange-700 font-bold px-2.5 py-1.5 rounded-lg active:scale-95 transition shadow-sm flex items-center">
+          <i class="fa-solid fa-globe mr-1 text-orange-500"></i>
+          <span id="langBtnText">English</span>
+        </button>
+        <button onclick="fetchOrders()" class="text-white text-xs bg-orange-700 bg-opacity-70 px-2.5 py-1.5 rounded-lg active:scale-95 transition">
+          <i class="fa-solid fa-arrows-rotate"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Make in India Badge Strip -->
+    <div class="max-w-md mx-auto mt-2 pt-1 border-t border-orange-400 border-opacity-40 flex justify-between items-center text-[10px] text-orange-100">
+      <span>🇮🇳 मेक इन इंडिया (Make in India)</span>
+      <span class="bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold">100% ट्रेसेबल</span>
+    </div>
+  </header>
+
+  <div class="p-4 max-w-md mx-auto space-y-4">
+
+    <!-- New Order Card -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+      <div class="flex justify-between items-center mb-3">
+        <h2 id="lblNewOrder" class="text-sm font-bold text-gray-800 flex items-center">
+          <i class="fa-solid fa-circle-plus text-orange-500 mr-2"></i> नया ऑर्डर / काम जोड़ें
+        </h2>
+        <button onclick="promptNewBusiness()" class="text-[11px] bg-orange-50 text-orange-600 font-bold px-2.5 py-1 rounded-lg border border-orange-200 active:scale-95 transition">
+          + बिज़नेस जोड़ें
+        </button>
+      </div>
+
+      <!-- Business Categories -->
+      <div id="bizContainer" class="flex space-x-2 overflow-x-auto pb-2 mb-3 scrollbar-none"></div>
+
+      <div class="space-y-3">
+        <div>
+          <label id="lblCName" class="text-xs font-semibold text-gray-600">ग्राहक का नाम</label>
+          <input id="cName" type="text" placeholder="उदा. राहुल शर्मा" class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
+        </div>
+
+        <div>
+          <label id="lblCPhone" class="text-xs font-semibold text-gray-600">WhatsApp नंबर (10 अंक)</label>
+          <input id="cPhone" type="tel" placeholder="9876543210" class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
+        </div>
+
+        <div>
+          <label id="lblCOrder" class="text-xs font-semibold text-gray-600">काम का विवरण</label>
+          <input id="cOrder" type="text" placeholder="उदा. 4 स्पेशल चाय / स्क्रीन चेंज / वेल्डिंग" class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
+        </div>
+
+        <div>
+          <label id="lblCAmount" class="text-xs font-semibold text-gray-600">कुल बिल (₹ Amount)</label>
+          <input id="cAmount" type="number" placeholder="उदा. 450" class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
+        </div>
+
+        <!-- Ready Date & Time Selector -->
+        <div class="bg-amber-50 p-3 rounded-xl border border-amber-200">
+          <label id="lblReadyDate" class="text-xs font-bold text-amber-900 block mb-1">
+            🎯 डिलीवरी / पूरा होने की तारीख व समय
+          </label>
+          
+          <div class="grid grid-cols-4 gap-1.5 mb-2">
+            <button type="button" onclick="setQuickDate(15, 'mins')" class="py-1 text-[11px] font-semibold border border-amber-300 rounded-lg bg-white text-amber-900">15 मिनट</button>
+            <button type="button" onclick="setQuickDate(0, 'today_eve')" class="py-1 text-[11px] font-semibold border border-amber-300 rounded-lg bg-white text-amber-900">आज शाम</button>
+            <button type="button" onclick="setQuickDate(1, 'days')" class="py-1 text-[11px] font-semibold border border-amber-300 rounded-lg bg-white text-amber-900">कल</button>
+            <button type="button" onclick="setQuickDate(2, 'days')" class="py-1 text-[11px] font-semibold border border-amber-300 rounded-lg bg-white text-amber-900">2 दिन बाद</button>
+          </div>
+
+          <input id="cReadyDateTime" type="datetime-local" class="w-full p-2 text-xs font-medium border border-amber-300 rounded-lg bg-white text-gray-800 outline-none">
+        </div>
+
+        <!-- Submit Button -->
+        <button onclick="createOrder()" id="saveBtn" class="w-full mt-1 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-95 transition flex items-center justify-center space-x-2">
+          <i class="fa-brands fa-whatsapp text-xl"></i>
+          <span id="btnSaveText">ऑर्डर दर्ज करें और WhatsApp भेजें</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Orders List -->
+    <div>
+      <div class="flex justify-between items-center mb-3">
+        <h2 id="lblActiveOrders" class="text-sm font-bold text-gray-800">
+          <i class="fa-solid fa-list-check text-orange-600 mr-1.5"></i> एक्टिव ऑर्डर्स (Active Tasks)
+        </h2>
+        <span id="orderCount" class="text-xs bg-orange-100 text-orange-800 font-bold px-2 py-0.5 rounded-full">0</span>
+      </div>
+
+      <div id="ordersContainer" class="space-y-3">
+        <div class="text-center py-8 text-gray-400 text-sm">लोड हो रहा है...</div>
+      </div>
+    </div>
+
+    <!-- Footer Branding -->
+    <div class="text-center pt-4 pb-2 text-[11px] text-gray-400 border-t border-gray-200">
+      <p class="font-bold text-gray-600">सारथी (Saarthi) • Powered by eevaan benchers</p>
+      <p class="text-[10px] mt-0.5">🇮🇳 मेक इन इंडिया | 100% ट्रेसेबल सुरक्षित टेक्नोलॉजी</p>
+    </div>
+
+  </div>
+
+  <script>
+    const SB_URL = "https://ibpnufoxjfltsvlzfogo.supabase.co/rest/v1";
+    const SB_KEY = "sb_publishable_JEjjvn_IzsxDMffCbluyaw_A-a2JWSV";
+
+    let currentLang = 'hi';
+    let defaultBusinesses = [
+      { id: 'chai', nameHi: 'चाय-नाश्ता', nameEn: 'Tea & Snacks', icon: 'fa-mug-hot' },
+      { id: 'repair', nameHi: 'मोबाइल रिपेयर', nameEn: 'Repairing', icon: 'fa-mobile-screen' },
+      { id: 'laundry', nameHi: 'लॉन्ड्री', nameEn: 'Laundry', icon: 'fa-shirt' },
+      { id: 'welding', nameHi: 'वेल्डिंग / फैब्रिकेशन', nameEn: 'Welding', icon: 'fa-fire-burner' }
+    ];
+
+    let userBusinesses = JSON.parse(localStorage.getItem('saarthi_businesses')) || defaultBusinesses;
+    let selectedBiz = userBusinesses[0].nameHi;
+
+    const translations = {
+      hi: {
+        langBtn: "English",
+        newOrder: "नया ऑर्डर / काम जोड़ें",
+        addBizBtn: "+ बिज़नेस जोड़ें",
+        cName: "ग्राहक का नाम",
+        cPhone: "WhatsApp नंबर (10 अंक)",
+        cOrder: "काम का विवरण",
+        cAmount: "कुल बिल (₹)",
+        readyDateLbl: "🎯 डिलीवरी / पूरा होने की तारीख व समय",
+        saveBtn: "ऑर्डर दर्ज करें और WhatsApp भेजें",
+        activeOrders: "एक्टिव ऑर्डर्स (चल रहे काम)",
+        noOrders: "अभी कोई एक्टिव ऑर्डर नहीं है।",
+        delayBtn: "⚠️ +1 दिन देरी",
+        readyBtn: "✅ तैयार है",
+        doneBtn: "🎉 पूरा हुआ"
+      },
+      en: {
+        langBtn: "हिन्दी",
+        newOrder: "Add New Order / Job",
+        addBizBtn: "+ Add Business",
+        cName: "Customer Name",
+        cPhone: "WhatsApp Number (10 digits)",
+        cOrder: "Job / Order Details",
+        cAmount: "Total Bill (₹)",
+        readyDateLbl: "🎯 Ready / Delivery Date & Time",
+        saveBtn: "Save Order & Send WhatsApp",
+        activeOrders: "Active Orders / Tasks",
+        noOrders: "No active orders right now.",
+        delayBtn: "⚠️ +1 Day Delay",
+        readyBtn: "✅ Ready",
+        doneBtn: "🎉 Completed"
+      }
+    };
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'hi' ? 'en' : 'hi';
+      document.getElementById('langBtnText').innerText = translations[currentLang].langBtn;
+      renderBizButtons();
+      fetchOrders();
+    }
+
+    function renderBizButtons() {
+      const container = document.getElementById('bizContainer');
+      container.innerHTML = userBusinesses.map(b => {
+        const title = currentLang === 'hi' ? (b.nameHi || b.nameEn) : (b.nameEn || b.nameHi);
+        const isActive = selectedBiz === b.nameHi;
+        return `
+          <button type="button" onclick="selectBiz('${b.nameHi}')" 
+            class="flex-shrink-0 px-3 py-2 text-xs font-bold rounded-xl border transition flex items-center space-x-1.5 ${isActive ? 'bg-orange-500 text-white border-orange-500 shadow-sm' : 'bg-white text-gray-700 border-gray-200'}">
+            <i class="fa-solid ${b.icon || 'fa-briefcase'}"></i>
+            <span>${title}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectBiz(bizName) {
+      selectedBiz = bizName;
+      renderBizButtons();
+    }
+
+    function promptNewBusiness() {
+      const name = prompt(currentLang === 'hi' ? "नया बिज़नेस का नाम लिखें (उदा. वेल्डिंग, टेलर):" : "Enter new business name:");
+      if(name && name.trim()) {
+        userBusinesses.push({ id: 'custom_' + Date.now(), nameHi: name.trim(), nameEn: name.trim(), icon: 'fa-briefcase' });
+        localStorage.setItem('saarthi_businesses', JSON.stringify(userBusinesses));
+        selectedBiz = name.trim();
+        renderBizButtons();
+      }
+    }
+
+    function setQuickDate(value, type) {
+      const now = new Date();
+      if(type === 'mins') {
+        now.setMinutes(now.getMinutes() + value);
+      } else if(type === 'today_eve') {
+        now.setHours(18, 0, 0, 0);
+      } else if(type === 'days') {
+        now.setDate(now.getDate() + value);
+        now.setHours(17, 0, 0, 0);
+      }
+      
+      const tzOffset = now.getTimezoneOffset() * 60000;
+      const localISOTime = (new Date(now.getTime() - tzOffset)).toISOString().slice(0, 16);
+      document.getElementById('cReadyDateTime').value = localISOTime;
+    }
+
+    setQuickDate(15, 'mins');
+    renderBizButtons();
+
+    function formatDisplayDate(dateStr) {
+      if(!dateStr) return '';
+      const d = new Date(dateStr);
+      return d.toLocaleString(currentLang === 'hi' ? 'hi-IN' : 'en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    }
+
+    async function createOrder() {
+      const name = document.getElementById('cName').value.trim();
+      let phone = document.getElementById('cPhone').value.trim();
+      const details = document.getElementById('cOrder').value.trim();
+      const amount = document.getElementById('cAmount').value || 0;
+      const readyDate = document.getElementById('cReadyDateTime').value;
+
+      if(!name || !details) {
+        alert(currentLang === 'hi' ? "कृपया नाम और विवरण लिखें!" : "Please enter name and details!");
+        return;
+      }
+
+      phone = phone.replace(/[^0-9]/g, '');
+      if(phone.length === 10) phone = '91' + phone;
+
+      const formattedReady = formatDisplayDate(readyDate);
+      const combinedDetails = `[${selectedBiz}] ${details} | तैयार: ${formattedReady}`;
+
+      const btn = document.getElementById('saveBtn');
+      btn.innerText = "सेव हो रहा है...";
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`${SB_URL}/orders`, {
+          method: 'POST',
+          headers: {
+            'apikey': SB_KEY,
+            'Authorization': `Bearer ${SB_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify({
+            customer_name: name,
+            customer_phone: phone,
+            order_details: combinedDetails,
+            amount: amount,
+            eta_minutes: 0,
+            status: 'accepted'
+          })
+        });
+
+        if(res.ok) {
+          const nowStr = formatDisplayDate(new Date().toISOString());
+          let msg = "";
+          
+          if(currentLang === 'hi') {
+            msg = encodeURIComponent(`नमस्ते ${name} जी! 🙏\n*सारथी (Saarthi)* के माध्यम से आपका कार्य स्वीकार कर लिया गया है।\n\n🏢 *व्यवसाय:* ${selectedBiz}\n📌 *विवरण:* ${details}\n📅 *तारीख:* ${nowStr}\n🎯 *तैयार होने की तारीख व समय:* ${formattedReady}\n💰 *कुल बिल:* ₹${amount}\n\n*eevaan benchers - मेक इन इंडिया | 100% ट्रेसेबल*`);
+          } else {
+            msg = encodeURIComponent(`Hello ${name}! 🙏\nYour order has been confirmed via *Saarthi*.\n\n🏢 *Business:* ${selectedBiz}\n📌 *Details:* ${details}\n📅 *Booked Date:* ${nowStr}\n🎯 *Ready Date & Time:* ${formattedReady}\n💰 *Total Bill:* ₹${amount}\n\n*eevaan benchers - Make in India | 100% Traceable*`);
+          }
+          
+          if(phone) {
+            window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+          }
+
+          document.getElementById('cName').value = '';
+          document.getElementById('cPhone').value = '';
+          document.getElementById('cOrder').value = '';
+          document.getElementById('cAmount').value = '';
+          setQuickDate(15, 'mins');
+
+          fetchOrders();
+        } else {
+          alert("Error saving order");
+        }
+      } catch(err) {
+        alert("Error: " + err.message);
+      } finally {
+        btn.innerHTML = `<i class="fa-brands fa-whatsapp text-xl"></i><span id="btnSaveText">${translations[currentLang].saveBtn}</span>`;
+        btn.disabled = false;
+      }
+    }
+
+    async function fetchOrders() {
+      const t = translations[currentLang];
+      try {
+        const res = await fetch(`${SB_URL}/orders?status=neq.completed&order=id.desc`, {
+          headers: {
+            'apikey': SB_KEY,
+            'Authorization': `Bearer ${SB_KEY}`
+          }
+        });
+        const orders = await res.json();
+        const container = document.getElementById('ordersContainer');
+        document.getElementById('orderCount').innerText = orders.length;
+
+        if(!orders || orders.length === 0) {
+          container.innerHTML = `<div class="text-center py-8 bg-white rounded-2xl border border-dashed border-gray-200 text-gray-400 text-sm">${t.noOrders}</div>`;
+          return;
+        }
+
+        container.innerHTML = orders.map(o => `
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 flex flex-col justify-between space-y-3">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-sm font-bold text-gray-900">${o.customer_name}</span>
+                <span class="text-xs text-gray-400 block">${o.customer_phone || ''}</span>
+                <span class="text-[11px] text-gray-500 font-medium flex items-center mt-1">
+                  <i class="fa-regular fa-calendar-check mr-1 text-orange-500"></i> बुक किया: ${formatDisplayDate(o.created_at)}
+                </span>
+              </div>
+              <span class="text-sm font-black text-gray-900 bg-orange-50 text-orange-700 px-2.5 py-1 rounded-lg">
+                ₹${o.amount}
+              </span>
+            </div>
+
+            <div class="bg-amber-50/70 p-2.5 rounded-xl text-xs text-gray-800 border border-amber-100">
+              <span class="font-bold text-amber-900 block mb-0.5">${o.order_details}</span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 pt-1 border-t border-gray-100">
+              <button onclick="sendDelay('${o.customer_name}', '${o.customer_phone}')" class="text-xs font-semibold py-1.5 px-1 bg-yellow-50 text-yellow-700 rounded-lg active:scale-95 transition">
+                ${t.delayBtn}
+              </button>
+              <button onclick="sendReady('${o.id}', '${o.customer_name}', '${o.customer_phone}')" class="text-xs font-semibold py-1.5 px-1 bg-blue-50 text-blue-700 rounded-lg active:scale-95 transition">
+                ${t.readyBtn}
+              </button>
+              <button onclick="markDone('${o.id}')" class="text-xs font-semibold py-1.5 px-1 bg-emerald-50 text-emerald-700 rounded-lg active:scale-95 transition">
+                ${t.doneBtn}
+              </button>
+            </div>
+          </div>
+        `).join('');
+
+      } catch(err) {
+        console.error(err);
+      }
+    }
+
+    function sendDelay(name, phone) {
+      if(!phone) { alert("फोन नंबर उपलब्ध नहीं है!"); return; }
+      const msg = currentLang === 'hi'
+        ? encodeURIComponent(`नमस्ते ${name} जी! 🙏\nदुकान पर अतिरिक्त काम होने के कारण आपके कार्य में 1 दिन का अतिरिक्त समय लग रहा है।\n\n*सारथी • eevaan benchers*`)
+        : encodeURIComponent(`Hello ${name}! 🙏\nDue to additional workload, your task requires 1 extra day.\n\n*Saarthi • eevaan benchers*`);
+      window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+    }
+
+    async function sendReady(id, name, phone) {
+      if(phone) {
+        const msg = currentLang === 'hi'
+          ? encodeURIComponent(`नमस्ते ${name} जी! 🎉\nआपका कार्य पूरी तरह तैयार है! आप आकर प्राप्त कर सकते हैं। धन्यवाद!\n\n*सारथी • eevaan benchers*`)
+          : encodeURIComponent(`Hello ${name}! 🎉\nYour order is ready for pickup! Thank you!\n\n*Saarthi • eevaan benchers*`);
+        window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+      }
+    }
+
+    async function markDone(id) {
+      await fetch(`${SB_URL}/orders?id=eq.${id}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': SB_KEY,
+          'Authorization': `Bearer ${SB_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: 'completed' })
+      });
+      fetchOrders();
+    }
+
+    fetchOrders();
+  </script>
+</body>
+</html>
