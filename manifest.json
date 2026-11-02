@@ -1,0 +1,17 @@
+{
+  "name": "सारथी - Saarthi",
+  "short_name": "सारथी",
+  "description": "सारथी व्यापार साथी - Powered by eevaan benchers",
+  "start_url": "/Saarthi/",
+  "display": "standalone",
+  "background_color": "#ea580c",
+  "theme_color": "#ea580c",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
