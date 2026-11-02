@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>सारथी - Saarthi</title>
   
-  <!-- Standalone Mobile App PWA Manifest -->
   <meta name="theme-color" content="#ea580c">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,7 +16,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans pb-20 select-none">
+<body class="bg-gray-100 text-gray-800 font-sans pb-24 select-none">
 
   <!-- Header -->
   <header class="bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 text-white p-4 shadow-lg sticky top-0 z-50">
@@ -52,11 +51,25 @@
 
   <div class="p-4 max-w-md mx-auto space-y-4">
 
-    <!-- New Order Card -->
+    <!-- Active Orders List (Placed on TOP so shopkeeper immediately sees incoming orders) -->
+    <div>
+      <div class="flex justify-between items-center mb-3">
+        <h2 id="lblActiveOrders" class="text-sm font-bold text-gray-800 flex items-center">
+          <i class="fa-solid fa-bell text-orange-600 mr-1.5 animate-bounce"></i> एक्टिव ऑर्डर्स (Live Orders)
+        </h2>
+        <span id="orderCount" class="text-xs bg-orange-100 text-orange-800 font-bold px-2 py-0.5 rounded-full">0</span>
+      </div>
+
+      <div id="ordersContainer" class="space-y-3">
+        <div class="text-center py-6 text-gray-400 text-sm">लोड हो रहा है...</div>
+      </div>
+    </div>
+
+    <!-- New Order Card (Manual Entry for walk-in customers) -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
       <div class="flex justify-between items-center mb-3">
         <h2 id="lblNewOrder" class="text-sm font-bold text-gray-800 flex items-center">
-          <i class="fa-solid fa-circle-plus text-orange-500 mr-2"></i> नया ऑर्डर / काम जोड़ें
+          <i class="fa-solid fa-circle-plus text-orange-500 mr-2"></i> दुकान पर आया नया ग्राहक जोड़ें
         </h2>
         <button onclick="promptNewBusiness()" class="text-[11px] bg-orange-50 text-orange-600 font-bold px-2.5 py-1 rounded-lg border border-orange-200 active:scale-95 transition">
           + बिज़नेस जोड़ें
@@ -111,20 +124,6 @@
       </div>
     </div>
 
-    <!-- Active Orders List -->
-    <div>
-      <div class="flex justify-between items-center mb-3">
-        <h2 id="lblActiveOrders" class="text-sm font-bold text-gray-800">
-          <i class="fa-solid fa-list-check text-orange-600 mr-1.5"></i> एक्टिव ऑर्डर्स (Active Tasks)
-        </h2>
-        <span id="orderCount" class="text-xs bg-orange-100 text-orange-800 font-bold px-2 py-0.5 rounded-full">0</span>
-      </div>
-
-      <div id="ordersContainer" class="space-y-3">
-        <div class="text-center py-8 text-gray-400 text-sm">लोड हो रहा है...</div>
-      </div>
-    </div>
-
     <!-- Footer Branding -->
     <div class="text-center pt-4 pb-2 text-[11px] text-gray-400 border-t border-gray-200">
       <p class="font-bold text-gray-600">सारथी (Saarthi) • Powered by eevaan benchers</p>
@@ -138,6 +137,9 @@
     const SB_KEY = "sb_publishable_JEjjvn_IzsxDMffCbluyaw_A-a2JWSV";
 
     let currentLang = 'hi';
+    let knownOrderIds = new Set();
+    let audioContext = null;
+
     let defaultBusinesses = [
       { id: 'chai', nameHi: 'चाय-नाश्ता', nameEn: 'Tea & Snacks', icon: 'fa-mug-hot' },
       { id: 'repair', nameHi: 'मोबाइल रिपेयर', nameEn: 'Repairing', icon: 'fa-mobile-screen' },
@@ -148,10 +150,30 @@
     let userBusinesses = JSON.parse(localStorage.getItem('saarthi_businesses')) || defaultBusinesses;
     let selectedBiz = userBusinesses[0].nameHi;
 
+    // आवाज (घंटी) बजाने का फंक्शन
+    function playChime() {
+      try {
+        if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioContext.currentTime); // D5
+        osc.frequency.setValueAtTime(880, audioContext.currentTime + 0.15); // A5
+        gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+        osc.start();
+        osc.stop(audioContext.currentTime + 0.6);
+      } catch (e) {
+        console.log("Audio play error", e);
+      }
+    }
+
     const translations = {
       hi: {
         langBtn: "English",
-        newOrder: "नया ऑर्डर / काम जोड़ें",
+        newOrder: "दुकान पर आया नया ग्राहक जोड़ें",
         addBizBtn: "+ बिज़नेस जोड़ें",
         cName: "ग्राहक का नाम",
         cPhone: "WhatsApp नंबर (10 अंक)",
@@ -159,15 +181,15 @@
         cAmount: "कुल बिल (₹)",
         readyDateLbl: "🎯 डिलीवरी / पूरा होने की तारीख व समय",
         saveBtn: "ऑर्डर दर्ज करें और WhatsApp भेजें",
-        activeOrders: "एक्टिव ऑर्डर्स (चल रहे काम)",
-        noOrders: "अभी कोई एक्टिव ऑर्डर नहीं है।",
-        delayBtn: "⚠️ +1 दिन देरी",
+        activeOrders: "एक्टिव ऑर्डर्स (Live Orders)",
+        noOrders: "अभी कोई पेंडिंग ऑर्डर नहीं है।",
+        delayBtn: "⚠️ +10m देरी",
         readyBtn: "✅ तैयार है",
         doneBtn: "🎉 पूरा हुआ"
       },
       en: {
         langBtn: "हिन्दी",
-        newOrder: "Add New Order / Job",
+        newOrder: "Add Walk-in Customer Order",
         addBizBtn: "+ Add Business",
         cName: "Customer Name",
         cPhone: "WhatsApp Number (10 digits)",
@@ -175,9 +197,9 @@
         cAmount: "Total Bill (₹)",
         readyDateLbl: "🎯 Ready / Delivery Date & Time",
         saveBtn: "Save Order & Send WhatsApp",
-        activeOrders: "Active Orders / Tasks",
-        noOrders: "No active orders right now.",
-        delayBtn: "⚠️ +1 Day Delay",
+        activeOrders: "Live Orders",
+        noOrders: "No pending orders right now.",
+        delayBtn: "⚠️ +10m Delay",
         readyBtn: "✅ Ready",
         doneBtn: "🎉 Completed"
       }
@@ -245,14 +267,12 @@
       return d.toLocaleString(currentLang === 'hi' ? 'hi-IN' : 'en-IN', {
         day: '2-digit',
         month: 'short',
-        year: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
         hour12: true
       });
     }
 
-    // ऑटो-डिटेक्ट टेबल (Orders vs orders)
     async function getOrdersUrl() {
       let res = await fetch(`${SB_BASE}/Orders?select=id&limit=1`, {
         headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
@@ -269,7 +289,7 @@
       const readyDate = document.getElementById('cReadyDateTime').value;
 
       if(!name || !details) {
-        alert(currentLang === 'hi' ? "कृपया ग्राहक का नाम और काम का विवरण भरें!" : "Please enter name and details!");
+        alert(currentLang === 'hi' ? "कृपया नाम और विवरण लिखें!" : "Please enter name and details!");
         return;
       }
 
@@ -305,13 +325,7 @@
 
         if(res.ok) {
           const nowStr = formatDisplayDate(new Date().toISOString());
-          let msg = "";
-          
-          if(currentLang === 'hi') {
-            msg = encodeURIComponent(`नमस्ते ${name} जी! 🙏\n*सारथी (Saarthi)* के माध्यम से आपका कार्य स्वीकार कर लिया गया है।\n\n🏢 *व्यवसाय:* ${selectedBiz}\n📌 *विवरण:* ${details}\n📅 *तारीख:* ${nowStr}\n🎯 *तैयार होने की तारीख व समय:* ${formattedReady}\n💰 *कुल बिल:* ₹${amount}\n\n*eevaan benchers - मेक इन इंडिया | 100% ट्रेसेबल*`);
-          } else {
-            msg = encodeURIComponent(`Hello ${name}! 🙏\nYour order has been confirmed via *Saarthi*.\n\n🏢 *Business:* ${selectedBiz}\n📌 *Details:* ${details}\n📅 *Booked Date:* ${nowStr}\n🎯 *Ready Date & Time:* ${formattedReady}\n💰 *Total Bill:* ₹${amount}\n\n*eevaan benchers - Make in India | 100% Traceable*`);
-          }
+          let msg = encodeURIComponent(`नमस्ते ${name} जी! 🙏\n*सारथी (Saarthi)* के माध्यम से आपका कार्य स्वीकार कर लिया गया है।\n\n🏢 *व्यवसाय:* ${selectedBiz}\n📌 *विवरण:* ${details}\n🎯 *तैयार होने का समय:* ${formattedReady}\n💰 *बिल:* ₹${amount}\n\n*eevaan benchers - मेक इन इंडिया*`);
           
           if(phone) {
             window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
@@ -324,14 +338,41 @@
           setQuickDate(15, 'mins');
 
           fetchOrders();
-        } else {
-          alert("डेटाबेस में सेव नहीं हुआ।");
         }
       } catch(err) {
         alert("एरर: " + err.message);
       } finally {
         btn.innerHTML = `<i class="fa-brands fa-whatsapp text-xl"></i><span id="btnSaveText">${translations[currentLang].saveBtn}</span>`;
         btn.disabled = false;
+      }
+    }
+
+    // ग्राहक के नए ऑर्डर को स्वीकार करना और टाइमर सेट करना
+    async function acceptCustomerOrder(id, mins, name, phone, details, amount) {
+      try {
+        const targetUrl = await getOrdersUrl();
+        await fetch(`${targetUrl}?id=eq.${id}`, {
+          method: 'PATCH',
+          headers: {
+            'apikey': SB_KEY,
+            'Authorization': `Bearer ${SB_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            status: 'accepted',
+            eta_minutes: mins
+          })
+        });
+
+        // WhatsApp संदेश
+        if(phone) {
+          const msg = encodeURIComponent(`नमस्ते ${name} जी! 🙏\nआपका ऑर्डर स्वीकार कर लिया गया है।\n\n📌 *ऑर्डर:* ${details}\n⏱️ *पहुँचने का समय:* अगले *${mins} मिनट* में आपके पास!\n💰 *बिल:* ₹${amount}\n\nधन्यवाद! — *सारथी • eevaan benchers*`);
+          window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+        }
+
+        fetchOrders();
+      } catch (e) {
+        alert("स्वीकार करने में त्रुटि: " + e.message);
       }
     }
 
@@ -350,49 +391,99 @@
         
         if(!Array.isArray(orders)) {
           document.getElementById('orderCount').innerText = '0';
-          container.innerHTML = `<div class="text-center py-8 bg-white rounded-2xl border border-dashed border-gray-200 text-gray-400 text-sm">${t.noOrders}</div>`;
+          container.innerHTML = `<div class="text-center py-6 bg-white rounded-2xl border border-dashed border-gray-200 text-gray-400 text-sm">${t.noOrders}</div>`;
           return;
         }
 
         document.getElementById('orderCount').innerText = orders.length;
 
         if(orders.length === 0) {
-          container.innerHTML = `<div class="text-center py-8 bg-white rounded-2xl border border-dashed border-gray-200 text-gray-400 text-sm">${t.noOrders}</div>`;
+          container.innerHTML = `<div class="text-center py-6 bg-white rounded-2xl border border-dashed border-gray-200 text-gray-400 text-sm">${t.noOrders}</div>`;
           return;
         }
 
-        container.innerHTML = orders.map(o => `
-          <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 flex flex-col justify-between space-y-3">
-            <div class="flex justify-between items-start">
-              <div>
-                <span class="text-sm font-bold text-gray-900">${o.customer_name}</span>
-                <span class="text-xs text-gray-400 block">${o.customer_phone || ''}</span>
-                <span class="text-[11px] text-gray-500 font-medium flex items-center mt-1">
-                  <i class="fa-regular fa-calendar-check mr-1 text-orange-500"></i> बुक किया: ${formatDisplayDate(o.created_at)}
-                </span>
+        // नया ऑर्डर आने पर घंटी बजाएँ
+        orders.forEach(o => {
+          if (o.status === 'pending' && !knownOrderIds.has(o.id)) {
+            playChime();
+          }
+          knownOrderIds.add(o.id);
+        });
+
+        container.innerHTML = orders.map(o => {
+          const isPending = o.status === 'pending';
+
+          if (isPending) {
+            // नया ग्राहक ऑर्डर जिस पर दुकानदार को 5, 10, 15 मिनट तय करना है
+            return `
+              <div class="bg-amber-50 rounded-2xl p-4 shadow-md border-2 border-orange-500 animate-pulse-subtle space-y-3">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <span class="text-xs bg-red-600 text-white font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                      🔔 नया ग्राहक ऑर्डर
+                    </span>
+                    <h3 class="text-base font-black text-gray-900 mt-1">${o.customer_name}</h3>
+                    <span class="text-xs text-gray-500">${o.customer_phone || 'नंबर नहीं है'} • ${formatDisplayDate(o.created_at)}</span>
+                  </div>
+                  <span class="text-lg font-black text-orange-700 bg-white px-2.5 py-1 rounded-xl border border-orange-200">
+                    ₹${o.amount}
+                  </span>
+                </div>
+
+                <div class="bg-white p-3 rounded-xl border border-amber-200 text-xs font-bold text-gray-800">
+                  ${o.order_details}
+                </div>
+
+                <div>
+                  <span class="text-xs font-bold text-orange-950 block mb-1.5">⏱️ कितने मिनट में पहुँचाएंगे? (टैप करें):</span>
+                  <div class="grid grid-cols-4 gap-1.5">
+                    <button onclick="acceptCustomerOrder('${o.id}', 5, '${o.customer_name}', '${o.customer_phone}', '${o.order_details}', '${o.amount}')" class="py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition">5 मिनट</button>
+                    <button onclick="acceptCustomerOrder('${o.id}', 10, '${o.customer_name}', '${o.customer_phone}', '${o.order_details}', '${o.amount}')" class="py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition">10 मिनट</button>
+                    <button onclick="acceptCustomerOrder('${o.id}', 15, '${o.customer_name}', '${o.customer_phone}', '${o.order_details}', '${o.amount}')" class="py-2 bg-orange-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition">15 मिनट</button>
+                    <button onclick="acceptCustomerOrder('${o.id}', 20, '${o.customer_name}', '${o.customer_phone}', '${o.order_details}', '${o.amount}')" class="py-2 bg-amber-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition">20 मिनट</button>
+                  </div>
+                </div>
               </div>
-              <span class="text-sm font-black text-gray-900 bg-orange-50 text-orange-700 px-2.5 py-1 rounded-lg">
-                ₹${o.amount}
-              </span>
-            </div>
+            `;
+          }
 
-            <div class="bg-amber-50/70 p-2.5 rounded-xl text-xs text-gray-800 border border-amber-100">
-              <span class="font-bold text-amber-900 block mb-0.5">${o.order_details}</span>
-            </div>
+          // सामान्य स्वीकार किया हुआ ऑर्डर (Accepted Order)
+          return `
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 flex flex-col justify-between space-y-3">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-sm font-bold text-gray-900">${o.customer_name}</span>
+                  <span class="text-xs text-gray-400 block">${o.customer_phone || ''}</span>
+                  <span class="text-[11px] text-gray-500 font-medium flex items-center mt-1">
+                    <i class="fa-regular fa-clock mr-1 text-orange-500"></i> ${formatDisplayDate(o.created_at)}
+                  </span>
+                </div>
+                <div class="text-right">
+                  <span class="text-sm font-black text-gray-900 bg-orange-50 text-orange-700 px-2.5 py-1 rounded-lg block">
+                    ₹${o.amount}
+                  </span>
+                  ${o.eta_minutes > 0 ? `<span class="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-full mt-1 inline-block">⏳ ${o.eta_minutes} मिनट तय</span>` : ''}
+                </div>
+              </div>
 
-            <div class="grid grid-cols-3 gap-2 pt-1 border-t border-gray-100">
-              <button onclick="sendDelay('${o.customer_name}', '${o.customer_phone}')" class="text-xs font-semibold py-1.5 px-1 bg-yellow-50 text-yellow-700 rounded-lg active:scale-95 transition">
-                ${t.delayBtn}
-              </button>
-              <button onclick="sendReady('${o.id}', '${o.customer_name}', '${o.customer_phone}')" class="text-xs font-semibold py-1.5 px-1 bg-blue-50 text-blue-700 rounded-lg active:scale-95 transition">
-                ${t.readyBtn}
-              </button>
-              <button onclick="markDone('${o.id}')" class="text-xs font-semibold py-1.5 px-1 bg-emerald-50 text-emerald-700 rounded-lg active:scale-95 transition">
-                ${t.doneBtn}
-              </button>
+              <div class="bg-amber-50/70 p-2.5 rounded-xl text-xs text-gray-800 border border-amber-100">
+                <span class="font-bold text-amber-900 block mb-0.5">${o.order_details}</span>
+              </div>
+
+              <div class="grid grid-cols-3 gap-2 pt-1 border-t border-gray-100">
+                <button onclick="sendDelay('${o.customer_name}', '${o.customer_phone}')" class="text-xs font-semibold py-1.5 px-1 bg-yellow-50 text-yellow-700 rounded-lg active:scale-95 transition">
+                  ${t.delayBtn}
+                </button>
+                <button onclick="sendReady('${o.id}', '${o.customer_name}', '${o.customer_phone}')" class="text-xs font-semibold py-1.5 px-1 bg-blue-50 text-blue-700 rounded-lg active:scale-95 transition">
+                  ${t.readyBtn}
+                </button>
+                <button onclick="markDone('${o.id}')" class="text-xs font-semibold py-1.5 px-1 bg-emerald-50 text-emerald-700 rounded-lg active:scale-95 transition">
+                  ${t.doneBtn}
+                </button>
+              </div>
             </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
 
       } catch(err) {
         console.error(err);
@@ -401,17 +492,13 @@
 
     function sendDelay(name, phone) {
       if(!phone) { alert("फोन नंबर उपलब्ध नहीं है!"); return; }
-      const msg = currentLang === 'hi'
-        ? encodeURIComponent(`नमस्ते ${name} जी! 🙏\nदुकान पर अतिरिक्त काम होने के कारण आपके कार्य में 1 दिन का अतिरिक्त समय लग रहा है।\n\n*सारथी • eevaan benchers*`)
-        : encodeURIComponent(`Hello ${name}! 🙏\nDue to additional workload, your task requires 1 extra day.\n\n*Saarthi • eevaan benchers*`);
+      const msg = encodeURIComponent(`नमस्ते ${name} जी! 🙏\nदुकान पर अचानक भीड़ होने के कारण आपके आर्डर में 10 मिनट का अतिरिक्त समय लग रहा है। असुविधा के लिए खेद है!\n\n*सारथी • eevaan benchers*`);
       window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
     }
 
     async function sendReady(id, name, phone) {
       if(phone) {
-        const msg = currentLang === 'hi'
-          ? encodeURIComponent(`नमस्ते ${name} जी! 🎉\nआपका कार्य पूरी तरह तैयार है! आप आकर प्राप्त कर सकते हैं। धन्यवाद!\n\n*सारथी • eevaan benchers*`)
-          : encodeURIComponent(`Hello ${name}! 🎉\nYour order is ready for pickup! Thank you!\n\n*Saarthi • eevaan benchers*`);
+        const msg = encodeURIComponent(`नमस्ते ${name} जी! 🎉\nआपका आर्डर तैयार है और डिलीवरी के लिए निकल चुका है! 🚀\n\n*सारथी • eevaan benchers*`);
         window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
       }
     }
@@ -430,6 +517,8 @@
       fetchOrders();
     }
 
+    // हर 4 सेकंड में ऑटो-चेक करें (नया ऑर्डर आने पर बिना रिफ्रेश किए खुद लोड होगा)
+    setInterval(fetchOrders, 4000);
     fetchOrders();
   </script>
 </body>
