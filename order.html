@@ -1,1 +1,386 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>सारथी - ऑर्डर करें (Order Now)</title>
+  
+  <meta name="theme-color" content="#ea580c">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans pb-24">
 
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-orange-600 to-amber-500 text-white p-4 shadow-md sticky top-0 z-50">
+    <div class="flex justify-between items-center max-w-md mx-auto">
+      <div>
+        <div class="flex items-center space-x-2">
+          <span class="text-xl font-black">सारथी</span>
+          <span class="text-[10px] bg-black bg-opacity-30 px-2 py-0.5 rounded-full uppercase">Customer Order</span>
+        </div>
+        <p class="text-[11px] text-orange-100">
+          Powered by <span class="font-bold text-white underline">eevaan benchers</span>
+        </p>
+      </div>
+
+      <button onclick="toggleLang()" class="text-xs bg-white text-orange-700 font-bold px-2.5 py-1.5 rounded-lg active:scale-95 transition shadow-sm flex items-center">
+        <i class="fa-solid fa-globe mr-1 text-orange-500"></i>
+        <span id="langBtn">English</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="p-4 max-w-md mx-auto space-y-4">
+
+    <!-- Order Screen -->
+    <div id="orderScreen" class="space-y-4">
+
+      <!-- Shop Banner -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-orange-100 flex items-center space-x-3">
+        <div class="w-12 h-12 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-2xl font-bold">
+          ☕
+        </div>
+        <div>
+          <h1 id="lblShopTitle" class="text-sm font-bold text-gray-900">चाय-नाश्ता त्वरित ऑर्डर</h1>
+          <p id="lblShopSub" class="text-xs text-gray-500">दुकान से सीधा आपके ऑफिस/टेबल पर</p>
+        </div>
+      </div>
+
+      <!-- Quick Menu Items -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+        <h2 id="lblMenuHeading" class="text-sm font-bold text-gray-800 mb-3 flex items-center">
+          <i class="fa-solid fa-utensils text-orange-500 mr-2"></i> मेनू चुनें (Select Items)
+        </h2>
+
+        <div class="space-y-2.5" id="menuList">
+          <!-- Items populated by JS -->
+        </div>
+
+        <div class="mt-3 pt-3 border-t border-gray-100">
+          <label id="lblCustomItem" class="text-xs font-semibold text-gray-600">अन्य कोई निर्देश / स्पेशल ऑर्डर</label>
+          <input id="customNote" type="text" placeholder="उदा. 2 चाय कम शक्कर, 1 बिस्कुट" class="w-full mt-1 p-2.5 text-xs border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
+      </div>
+
+      <!-- Customer Details Form -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 space-y-3">
+        <h2 id="lblDetailsHeading" class="text-sm font-bold text-gray-800 flex items-center">
+          <i class="fa-solid fa-location-dot text-orange-500 mr-2"></i> आपका विवरण (Delivery Details)
+        </h2>
+
+        <div>
+          <label id="lblCName" class="text-xs font-semibold text-gray-600">आपका नाम</label>
+          <input id="custName" type="text" placeholder="उदा. राहुल भाई" class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
+
+        <div>
+          <label id="lblCLocation" class="text-xs font-semibold text-gray-600">ऑफिस / शॉप / टेबल नंबर</label>
+          <input id="custLocation" type="text" placeholder="उदा. ऑफिस 204, दूसरी मंजिल" class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
+
+        <div>
+          <label id="lblCPhone" class="text-xs font-semibold text-gray-600">WhatsApp नंबर (अपडेट पाने के लिए)</label>
+          <input id="custPhone" type="tel" placeholder="9876543210" class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
+      </div>
+
+      <!-- Total & Submit Bar -->
+      <div class="bg-white rounded-2xl shadow-lg border border-orange-200 p-4 flex justify-between items-center">
+        <div>
+          <span id="lblTotalText" class="text-xs text-gray-500 block">कुल बिल</span>
+          <span class="text-2xl font-black text-gray-900">₹<span id="totalBill">0</span></span>
+        </div>
+        <button onclick="submitOrder()" id="btnSubmit" class="bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold px-6 py-3 rounded-xl shadow-md active:scale-95 transition flex items-center space-x-2">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span id="btnSubmitText">ऑर्डर भेजें</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Live Status Tracking Screen (Hidden Initially) -->
+    <div id="trackingScreen" class="hidden space-y-4">
+      <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-200 text-center space-y-4">
+        
+        <div id="statusIcon" class="w-20 h-20 mx-auto rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-3xl animate-pulse">
+          ⏳
+        </div>
+
+        <div>
+          <h2 id="statusTitle" class="text-lg font-black text-gray-900">ऑर्डर भेज दिया गया है!</h2>
+          <p id="statusMsg" class="text-xs text-gray-500 mt-1">दुकानदार द्वारा समय निर्धारित करने की प्रतीक्षा है...</p>
+        </div>
+
+        <!-- Timer Countdown -->
+        <div id="timerBox" class="hidden bg-orange-50 p-4 rounded-2xl border border-orange-200">
+          <span id="lblEtaText" class="text-xs font-bold text-orange-800 uppercase tracking-wider block">पहुँचने का अनुमानित समय</span>
+          <span id="etaDisplay" class="text-3xl font-black text-orange-600">15 मिनट</span>
+        </div>
+
+        <!-- Order Summary Card -->
+        <div class="bg-gray-50 p-4 rounded-xl text-left text-xs space-y-1.5 border border-gray-200">
+          <p><b>ऑर्डर:</b> <span id="trackItems"></span></p>
+          <p><b>पता:</b> <span id="trackLoc"></span></p>
+          <p><b>बिल:</b> ₹<span id="trackTotal"></span></p>
+        </div>
+
+        <button onclick="resetOrder()" class="text-xs text-orange-600 font-bold underline pt-2">
+          + एक और नया ऑर्डर करें
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Footer Branding -->
+    <div class="text-center pt-4 text-[11px] text-gray-400">
+      <p class="font-bold text-gray-600">सारथी (Saarthi) • Powered by eevaan benchers</p>
+      <p class="text-[10px] mt-0.5">🇮🇳 मेक इन इंडिया | 100% ट्रेसेबल टेक्नोलॉजी</p>
+    </div>
+
+  </div>
+
+  <script>
+    const SB_BASE = "https://ibpnufoxjfltsvlzfogo.supabase.co/rest/v1";
+    const SB_KEY = "sb_publishable_JEjjvn_IzsxDMffCbluyaw_A-a2JWSV";
+
+    let currentLang = 'hi';
+    let currentOrderId = null;
+    let pollInterval = null;
+
+    const menu = [
+      { id: 'chai_reg', nameHi: 'कड़क चाय', nameEn: 'Regular Tea', price: 10, count: 0 },
+      { id: 'chai_masala', nameHi: 'मसाला / स्पेशल चाय', nameEn: 'Special Masala Tea', price: 15, count: 0 },
+      { id: 'coffee', nameHi: 'हॉट कॉफ़ी', nameEn: 'Hot Coffee', price: 20, count: 0 },
+      { id: 'samosa', nameHi: 'समोसा', nameEn: 'Samosa', price: 15, count: 0 },
+      { id: 'poha', nameHi: 'पोहा प्लेट', nameEn: 'Poha Plate', price: 25, count: 0 }
+    ];
+
+    const i18n = {
+      hi: {
+        langBtn: "English",
+        shopTitle: "चाय-नाश्ता त्वरित ऑर्डर",
+        shopSub: "दुकान से सीधा आपके ऑफिस/टेबल पर",
+        menuHeading: "मेनू चुनें (Select Items)",
+        customNote: "अन्य कोई निर्देश / स्पेशल ऑर्डर",
+        customNotePh: "उदा. 2 चाय कम शक्कर, 1 बिस्कुट",
+        detailsHeading: "आपका विवरण (Delivery Details)",
+        cName: "आपका नाम",
+        cNamePh: "उदा. राहुल भाई",
+        cLoc: "ऑफिस / शॉप / टेबल नंबर",
+        cLocPh: "उदा. ऑफिस 204, दूसरी मंजिल",
+        cPhone: "WhatsApp नंबर (अपडेट पाने के लिए)",
+        totalText: "कुल बिल",
+        submitText: "ऑर्डर भेजें",
+        waitingTitle: "ऑर्डर दुकानदार तक पहुँच गया!",
+        waitingSub: "दुकानदार द्वारा समय निर्धारित करने की प्रतीक्षा है...",
+        acceptedTitle: "ऑर्डर स्वीकार हो गया है! 🎉",
+        acceptedSub: "दुकानदार तैयारी कर रहा है...",
+        readyTitle: "तैयार / डिलीवरी के लिए निकल गया! 🚀",
+        etaText: "पहुँचने का अनुमानित समय"
+      },
+      en: {
+        langBtn: "हिन्दी",
+        shopTitle: "Quick Tea & Snacks Order",
+        shopSub: "Directly delivered to your desk/table",
+        menuHeading: "Select Menu Items",
+        customNote: "Special Instructions / Other Items",
+        customNotePh: "e.g. 2 Tea less sugar, 1 biscuit",
+        detailsHeading: "Delivery Details",
+        cName: "Your Name",
+        cNamePh: "e.g. Rahul Sharma",
+        cLoc: "Office / Shop / Table Number",
+        cLocPh: "e.g. Office 204, 2nd Floor",
+        cPhone: "WhatsApp Number (for updates)",
+        totalText: "Total Bill",
+        submitText: "Place Order",
+        waitingTitle: "Order Sent to Shopkeeper!",
+        waitingSub: "Waiting for shopkeeper to set delivery time...",
+        acceptedTitle: "Order Accepted! 🎉",
+        acceptedSub: "Shopkeeper is preparing your order...",
+        readyTitle: "Out for Delivery / Ready! 🚀",
+        etaText: "Estimated Delivery Time"
+      }
+    };
+
+    function toggleLang() {
+      currentLang = currentLang === 'hi' ? 'en' : 'hi';
+      renderMenu();
+      applyText();
+    }
+
+    function applyText() {
+      const t = i18n[currentLang];
+      document.getElementById('langBtn').innerText = t.langBtn;
+      document.getElementById('lblShopTitle').innerText = t.shopTitle;
+      document.getElementById('lblShopSub').innerText = t.shopSub;
+      document.getElementById('lblMenuHeading').innerHTML = `<i class="fa-solid fa-utensils text-orange-500 mr-2"></i> ${t.menuHeading}`;
+      document.getElementById('lblCustomItem').innerText = t.customNote;
+      document.getElementById('customNote').placeholder = t.customNotePh;
+      document.getElementById('lblDetailsHeading').innerHTML = `<i class="fa-solid fa-location-dot text-orange-500 mr-2"></i> ${t.detailsHeading}`;
+      document.getElementById('lblCName').innerText = t.cName;
+      document.getElementById('custName').placeholder = t.cNamePh;
+      document.getElementById('lblCLocation').innerText = t.cLoc;
+      document.getElementById('custLocation').placeholder = t.cLocPh;
+      document.getElementById('lblCPhone').innerText = t.cPhone;
+      document.getElementById('lblTotalText').innerText = t.totalText;
+      document.getElementById('btnSubmitText').innerText = t.submitText;
+    }
+
+    function renderMenu() {
+      const container = document.getElementById('menuList');
+      container.innerHTML = menu.map(m => `
+        <div class="flex justify-between items-center p-2.5 rounded-xl border border-gray-100 bg-gray-50/70">
+          <div>
+            <span class="text-xs font-bold text-gray-800 block">${currentLang === 'hi' ? m.nameHi : m.nameEn}</span>
+            <span class="text-xs text-orange-600 font-extrabold">₹${m.price}</span>
+          </div>
+          <div class="flex items-center space-x-2.5">
+            <button onclick="changeQty('${m.id}', -1)" class="w-7 h-7 rounded-lg bg-white border border-gray-300 text-gray-700 font-bold active:scale-90">-</button>
+            <span class="text-xs font-black w-4 text-center">${m.count}</span>
+            <button onclick="changeQty('${m.id}', 1)" class="w-7 h-7 rounded-lg bg-orange-500 text-white font-bold active:scale-90 shadow-sm">+</button>
+          </div>
+        </div>
+      `).join('');
+      calcTotal();
+    }
+
+    function changeQty(id, delta) {
+      const item = menu.find(m => m.id === id);
+      if(item) {
+        item.count = Math.max(0, item.count + delta);
+        renderMenu();
+      }
+    }
+
+    function calcTotal() {
+      const total = menu.reduce((sum, m) => sum + (m.price * m.count), 0);
+      document.getElementById('totalBill').innerText = total;
+    }
+
+    async function getOrdersUrl() {
+      let res = await fetch(`${SB_BASE}/Orders?select=id&limit=1`, {
+        headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+      });
+      if(res.ok) return `${SB_BASE}/Orders`;
+      return `${SB_BASE}/orders`;
+    }
+
+    async function submitOrder() {
+      const name = document.getElementById('custName').value.trim();
+      const loc = document.getElementById('custLocation').value.trim();
+      let phone = document.getElementById('custPhone').value.trim();
+      const custom = document.getElementById('customNote').value.trim();
+
+      const itemsList = menu.filter(m => m.count > 0).map(m => `${m.count}x ${m.nameHi}`).join(', ');
+      const total = document.getElementById('totalBill').innerText;
+
+      if(!itemsList && !custom) {
+        alert(currentLang === 'hi' ? "कृपया मेनू में से कम से कम 1 सामान चुनें!" : "Please select at least 1 item!");
+        return;
+      }
+      if(!name || !loc) {
+        alert(currentLang === 'hi' ? "कृपया अपना नाम और ऑफिस/टेबल नंबर भरें!" : "Please enter your name and table/office location!");
+        return;
+      }
+
+      phone = phone.replace(/[^0-9]/g, '');
+      if(phone.length === 10) phone = '91' + phone;
+
+      const fullDetails = `[ग्राहक ऑर्डर] ${itemsList} ${custom ? `(${custom})` : ''} | पता: ${loc}`;
+
+      const btn = document.getElementById('btnSubmit');
+      btn.disabled = true;
+      btn.innerText = "भेज रहे हैं...";
+
+      try {
+        const targetUrl = await getOrdersUrl();
+        const res = await fetch(targetUrl, {
+          method: 'POST',
+          headers: {
+            'apikey': SB_KEY,
+            'Authorization': `Bearer ${SB_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify({
+            customer_name: `${name} (${loc})`,
+            customer_phone: phone,
+            order_details: fullDetails,
+            amount: parseInt(total) || 0,
+            eta_minutes: 0,
+            status: 'pending'
+          })
+        });
+
+        const created = await res.json();
+        if(res.ok && created && created[0]) {
+          currentOrderId = created[0].id;
+          showTracking(fullDetails, loc, total);
+        } else {
+          alert("ऑर्डर सबमिट नहीं हुआ। कृपया दोबारा प्रयास करें।");
+        }
+      } catch(err) {
+        alert("इंटरनेट एरर: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = i18n[currentLang].submitText;
+      }
+    }
+
+    function showTracking(details, loc, total) {
+      document.getElementById('orderScreen').classList.add('hidden');
+      document.getElementById('trackingScreen').classList.remove('hidden');
+
+      document.getElementById('trackItems').innerText = details;
+      document.getElementById('trackLoc').innerText = loc;
+      document.getElementById('trackTotal').innerText = total;
+
+      // लाइव स्टेटस चेक करना (हर 4 सेकंड में)
+      pollInterval = setInterval(checkOrderStatus, 4000);
+    }
+
+    async function checkOrderStatus() {
+      if(!currentOrderId) return;
+      try {
+        const targetUrl = await getOrdersUrl();
+        const res = await fetch(`${targetUrl}?id=eq.${currentOrderId}&select=status,eta_minutes`, {
+          headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+        });
+        const data = await res.json();
+        if(data && data[0]) {
+          const ord = data[0];
+          const t = i18n[currentLang];
+          if(ord.status === 'accepted' && ord.eta_minutes > 0) {
+            document.getElementById('statusTitle').innerText = t.acceptedTitle;
+            document.getElementById('statusMsg').innerText = t.acceptedSub;
+            document.getElementById('statusIcon').innerText = "👨‍🍳";
+            document.getElementById('statusIcon').className = "w-20 h-20 mx-auto rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl";
+            document.getElementById('timerBox').classList.remove('hidden');
+            document.getElementById('etaDisplay').innerText = `${ord.eta_minutes} ${currentLang === 'hi' ? 'मिनट में तैयार' : 'mins'}`;
+          } else if(ord.status === 'ready' || ord.status === 'completed') {
+            document.getElementById('statusTitle').innerText = t.readyTitle;
+            document.getElementById('statusIcon').innerText = "🚀";
+            document.getElementById('statusIcon').className = "w-20 h-20 mx-auto rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-3xl";
+            clearInterval(pollInterval);
+          }
+        }
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    function resetOrder() {
+      clearInterval(pollInterval);
+      menu.forEach(m => m.count = 0);
+      document.getElementById('customNote').value = '';
+      document.getElementById('orderScreen').classList.remove('hidden');
+      document.getElementById('trackingScreen').classList.add('hidden');
+      renderMenu();
+    }
+
+    renderMenu();
+    applyText();
+  </script>
+</body>
+</html>
