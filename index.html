@@ -25,16 +25,19 @@
           <span class="text-[10px] bg-black bg-opacity-30 px-2 py-0.5 rounded-full font-medium tracking-wider uppercase">Saarthi</span>
         </div>
         <p class="text-[11px] text-orange-100 font-medium tracking-tight">
-          दुकान: <span id="hdrShopName" class="font-bold text-white underline">मेरी दुकान</span>
+          <span id="lblShopPrefix">दुकान:</span> <span id="hdrShopName" class="font-bold text-white underline">मेरी दुकान</span>
         </p>
       </div>
       
       <div class="flex items-center space-x-2">
         <button onclick="openShopModal()" class="text-xs bg-orange-700 bg-opacity-80 text-white font-bold px-2 py-1.5 rounded-lg active:scale-95 transition flex items-center shadow-sm">
-          <i class="fa-solid fa-qrcode mr-1"></i> दुकान QR
+          <i class="fa-solid fa-qrcode mr-1"></i> <span id="btnShopQr">QR</span>
         </button>
         <button onclick="openDailySummary()" class="text-xs bg-emerald-700 bg-opacity-90 text-white font-bold px-2 py-1.5 rounded-lg active:scale-95 transition flex items-center shadow-sm">
-          <i class="fa-solid fa-chart-pie mr-1"></i> गल्ला
+          <i class="fa-solid fa-chart-pie mr-1"></i> <span id="btnGalla">गल्ला</span>
+        </button>
+        <button onclick="toggleLanguage()" class="text-xs bg-white text-orange-700 font-bold px-2.5 py-1.5 rounded-lg active:scale-95 transition shadow-sm">
+          <span id="langBtnText">EN</span>
         </button>
       </div>
     </div>
@@ -49,10 +52,10 @@
   <!-- Navigation Tabs -->
   <div class="max-w-md mx-auto bg-white border-b border-gray-200 grid grid-cols-2 text-center text-xs font-bold sticky top-16 z-40">
     <button onclick="switchTab('orders')" id="tabOrders" class="py-3 border-b-2 border-orange-500 text-orange-600 flex items-center justify-center space-x-1.5">
-      <i class="fa-solid fa-bell"></i> <span>लाइव ऑर्डर्स</span>
+      <i class="fa-solid fa-bell"></i> <span id="tabOrdersText">लाइव ऑर्डर्स</span>
     </button>
     <button onclick="switchTab('khata')" id="tabKhata" class="py-3 border-b-2 border-transparent text-gray-500 flex items-center justify-center space-x-1.5">
-      <i class="fa-solid fa-book"></i> <span>उधारी खाता (Ledger)</span>
+      <i class="fa-solid fa-book"></i> <span id="tabKhataText">उधारी खाता (Ledger)</span>
     </button>
   </div>
 
@@ -64,7 +67,7 @@
       <!-- Live Orders List -->
       <div>
         <div class="flex justify-between items-center mb-2">
-          <h2 class="text-sm font-bold text-gray-800 flex items-center">
+          <h2 id="lblLiveHeading" class="text-sm font-bold text-gray-800 flex items-center">
             <i class="fa-solid fa-fire text-orange-500 mr-1.5"></i> एक्टिव ऑर्डर्स (Live Orders)
           </h2>
           <span id="orderCount" class="text-xs bg-orange-100 text-orange-800 font-bold px-2 py-0.5 rounded-full">0</span>
@@ -76,31 +79,31 @@
 
       <!-- Walk-in Customer Form -->
       <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
-        <h2 class="text-sm font-bold text-gray-800 mb-3 flex items-center">
+        <h2 id="lblWalkinHeading" class="text-sm font-bold text-gray-800 mb-3 flex items-center">
           <i class="fa-solid fa-circle-plus text-orange-500 mr-2"></i> दुकान पर आया ग्राहक जोड़ें
         </h2>
 
         <div class="space-y-3">
           <div>
-            <label class="text-xs font-semibold text-gray-600">ग्राहक का नाम</label>
+            <label id="lblCName" class="text-xs font-semibold text-gray-600">ग्राहक का नाम</label>
             <input id="cName" type="text" placeholder="उदा. राहुल शर्मा" class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-orange-500">
           </div>
           <div>
-            <label class="text-xs font-semibold text-gray-600">WhatsApp नंबर (10 अंक)</label>
+            <label id="lblCPhone" class="text-xs font-semibold text-gray-600">WhatsApp नंबर (10 अंक)</label>
             <input id="cPhone" type="tel" placeholder="9876543210" class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-orange-500">
           </div>
           <div>
-            <label class="text-xs font-semibold text-gray-600">सामान / विवरण</label>
+            <label id="lblCOrder" class="text-xs font-semibold text-gray-600">सामान / विवरण</label>
             <input id="cOrder" type="text" placeholder="उदा. 4 स्पेशल चाय + 2 समोसे" class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-orange-500">
           </div>
           <div>
-            <label class="text-xs font-semibold text-gray-600">कुल बिल (₹ Amount)</label>
+            <label id="lblCAmount" class="text-xs font-semibold text-gray-600">कुल बिल (₹ Amount)</label>
             <input id="cAmount" type="number" placeholder="उदा. 60" class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-orange-500">
           </div>
 
           <button onclick="createOrder()" id="saveBtn" class="w-full mt-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-95 transition flex items-center justify-center space-x-2">
             <i class="fa-brands fa-whatsapp text-xl"></i>
-            <span>ऑर्डर जोड़ें और WhatsApp भेजें</span>
+            <span id="btnSaveText">ऑर्डर जोड़ें और WhatsApp भेजें</span>
           </button>
         </div>
       </div>
@@ -110,10 +113,10 @@
     <!-- ================= KHATA / STATEMENT VIEW ================= -->
     <div id="viewKhata" class="hidden space-y-4">
       <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200">
-        <h3 class="text-sm font-bold text-amber-900 flex items-center">
+        <h3 id="lblKhataTitle" class="text-sm font-bold text-amber-900 flex items-center">
           <i class="fa-solid fa-book-bookmark mr-2 text-amber-700"></i> डिजिटल उधारी खाता लेजर
         </h3>
-        <p class="text-xs text-amber-700 mt-1">यहाँ सभी ग्राहकों का बकाया हिसाब रहता है। 1-क्लिक में 10 दिन का स्टेटमेंट भेजें या चुकता मार्क करें।</p>
+        <p id="lblKhataSub" class="text-xs text-amber-700 mt-1">यहाँ सभी ग्राहकों का बकाया हिसाब रहता है। 1-क्लिक में 10 दिन का स्टेटमेंट भेजें या चुकता मार्क करें।</p>
       </div>
 
       <div id="khataContainer" class="space-y-3">
@@ -150,29 +153,26 @@
         </div>
         <div>
           <label class="text-xs font-semibold text-gray-600">दुकान की UPI ID (पेमेंट पाने के लिए)</label>
-          <input id="cfgShopUpi" type="text" class="w-full mt-1 p-2 text-sm border rounded-xl" placeholder="उदा. sharma@okaxis / phonepe">
+          <input id="cfgShopUpi" type="text" class="w-full mt-1 p-2 text-sm border rounded-xl" placeholder="उदा. sharma@okaxis">
         </div>
         <button onclick="saveShopProfile()" class="w-full py-2.5 bg-orange-600 text-white text-xs font-bold rounded-xl shadow">
           सेव करें और QR कोड बनाएं
         </button>
       </div>
 
-      <!-- Generated QR Code Display -->
       <div id="qrPreviewArea" class="text-center pt-3 border-t hidden space-y-2">
         <span class="text-xs font-bold text-gray-700 block">आपकी दुकान का कस्टमर ऑर्डर QR कोड:</span>
         <img id="shopQrImg" src="" alt="Shop QR" class="mx-auto w-40 h-40 border-2 border-orange-200 rounded-xl p-1 shadow-sm">
-        <div class="flex space-x-2 pt-1">
-          <button onclick="shareShopLink()" class="w-full py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl flex items-center justify-center space-x-1">
-            <i class="fa-brands fa-whatsapp text-sm"></i> <span>कस्टमर लिंक शेयर करें</span>
-          </button>
-        </div>
+        <button onclick="shareShopLink()" class="w-full py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl flex items-center justify-center space-x-1">
+          <i class="fa-brands fa-whatsapp text-sm"></i> <span>कस्टमर लिंक शेयर करें</span>
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- ================= DAILY SUMMARY MODAL ================= -->
+  <!-- ================= DAILY SUMMARY MODAL (गल्ला विवरण) ================= -->
   <div id="dailyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-4 shadow-xl">
+    <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-4 shadow-xl max-h-[90vh] flex flex-col">
       <div class="flex justify-between items-center border-b pb-2">
         <h3 class="text-sm font-bold text-gray-900 flex items-center">
           <i class="fa-solid fa-cash-register text-emerald-600 mr-2"></i> आज का गल्ला (Daily Summary)
@@ -180,31 +180,36 @@
         <button onclick="closeDailySummary()" class="text-gray-400 text-lg font-bold">✕</button>
       </div>
 
-      <div class="grid grid-cols-2 gap-3 text-center">
-        <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200">
-          <span class="text-[11px] text-emerald-800 font-bold block">💵 नकद (Cash)</span>
-          <span id="sumCash" class="text-lg font-black text-emerald-700">₹0</span>
+      <!-- 4 Cards -->
+      <div class="grid grid-cols-2 gap-2 text-center">
+        <div class="bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
+          <span class="text-[10px] text-emerald-800 font-bold block">💵 नकद (Cash)</span>
+          <span id="sumCash" class="text-base font-black text-emerald-700">₹0</span>
         </div>
-        <div class="bg-blue-50 p-3 rounded-xl border border-blue-200">
-          <span class="text-[11px] text-blue-800 font-bold block">📱 UPI पेमेंट</span>
-          <span id="sumUpi" class="text-lg font-black text-blue-700">₹0</span>
+        <div class="bg-blue-50 p-2.5 rounded-xl border border-blue-200">
+          <span class="text-[10px] text-blue-800 font-bold block">📱 UPI पेमेंट</span>
+          <span id="sumUpi" class="text-base font-black text-blue-700">₹0</span>
         </div>
-        <div class="bg-amber-50 p-3 rounded-xl border border-amber-200">
-          <span class="text-[11px] text-amber-800 font-bold block">📒 आज का उधार</span>
-          <span id="sumUdhar" class="text-lg font-black text-amber-700">₹0</span>
+        <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-200">
+          <span class="text-[10px] text-amber-800 font-bold block">📒 आज का उधार</span>
+          <span id="sumUdhar" class="text-base font-black text-amber-700">₹0</span>
         </div>
-        <div class="bg-orange-50 p-3 rounded-xl border border-orange-200">
-          <span class="text-[11px] text-orange-800 font-bold block">🎉 कुल बिक्री</span>
-          <span id="sumTotal" class="text-lg font-black text-orange-700">₹0</span>
+        <div class="bg-orange-50 p-2.5 rounded-xl border border-orange-200">
+          <span class="text-[10px] text-orange-800 font-bold block">🎉 कुल बिक्री</span>
+          <span id="sumTotal" class="text-base font-black text-orange-700">₹0</span>
         </div>
       </div>
 
-      <div class="bg-gray-50 p-3 rounded-xl text-xs text-gray-600">
-        <p><b>आज कुल पूर्ण ऑर्डर:</b> <span id="sumCount">0</span></p>
+      <!-- Live Transaction Details List -->
+      <div class="flex-1 overflow-y-auto space-y-2 border-t pt-2">
+        <span class="text-xs font-bold text-gray-700 block">आज के ऑर्डर्स का पूरा विवरण:</span>
+        <div id="dailyOrdersList" class="space-y-1.5 text-xs">
+          <!-- Populated by JS -->
+        </div>
       </div>
 
       <button onclick="closeDailySummary()" class="w-full py-2 bg-gray-800 text-white text-xs font-bold rounded-xl">
-        ठीक है
+        बंद करें
       </button>
     </div>
   </div>
@@ -212,7 +217,7 @@
   <!-- ================= PAYMENT SELECTION MODAL ================= -->
   <div id="paymentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-4 shadow-xl text-center">
-      <h3 class="text-base font-bold text-gray-900">भुगतान कैसे हुआ? (Payment Mode)</h3>
+      <h3 class="text-base font-bold text-gray-900">भुगतान कैसे हुआ? (Select Payment)</h3>
       <p id="payModalAmount" class="text-2xl font-black text-orange-600">₹0</p>
       
       <div class="grid grid-cols-3 gap-2">
@@ -228,6 +233,9 @@
       </div>
 
       <input type="hidden" id="payOrderId">
+      <input type="hidden" id="payOrderDetails">
+      <input type="hidden" id="payOrderName">
+      <input type="hidden" id="payOrderPhone">
       <button onclick="closePaymentModal()" class="text-xs text-gray-400 font-semibold underline">रद्द करें</button>
     </div>
   </div>
@@ -263,15 +271,91 @@
     const SB_BASE = "https://ibpnufoxjfltsvlzfogo.supabase.co/rest/v1";
     const SB_KEY = "sb_publishable_JEjjvn_IzsxDMffCbluyaw_A-a2JWSV";
 
+    let currentLang = 'hi';
     let knownOrderIds = new Set();
     let audioContext = null;
 
-    // दुकान प्रोफाइल डेटा
+    // लोकल स्टोरेज में पूरा रिकॉर्ड (ताकि डेटाबेस नेटवर्क के कारण कभी न अटके)
+    let localKhata = JSON.parse(localStorage.getItem('saarthi_local_khata')) || [];
+    let localCompleted = JSON.parse(localStorage.getItem('saarthi_local_completed')) || [];
+
     let shopProfile = JSON.parse(localStorage.getItem('saarthi_shop_profile')) || {
       name: 'शर्मा जी टी स्टॉल',
       phone: '9876543210',
       upi: 'sharma@upi'
     };
+
+    const i18n = {
+      hi: {
+        langBtn: "EN",
+        shopPrefix: "दुकान:",
+        shopQr: "QR",
+        galla: "गल्ला",
+        tabOrders: "लाइव ऑर्डर्स",
+        tabKhata: "उधारी खाता (Ledger)",
+        liveHeading: "एक्टिव ऑर्डर्स (Live Orders)",
+        walkinHeading: "दुकान पर आया ग्राहक जोड़ें",
+        cName: "ग्राहक का नाम",
+        cPhone: "WhatsApp नंबर (10 अंक)",
+        cOrder: "सामान / विवरण",
+        cAmount: "कुल बिल (₹ Amount)",
+        btnSave: "ऑर्डर जोड़ें और WhatsApp भेजें",
+        khataTitle: "डिजिटल उधारी खाता लेजर",
+        khataSub: "यहाँ सभी ग्राहकों का बकाया हिसाब रहता है। 1-क्लिक में 10 दिन का स्टेटमेंट भेजें या चुकता मार्क करें।",
+        noOrders: "अभी कोई पेंडिंग ऑर्डर नहीं है।",
+        noKhata: "अभी किसी का उधारी बकाया नहीं है।",
+        delayBtn: "⚠️ +10m देरी",
+        readyBtn: "✅ निकल गया",
+        doneBtn: "🎉 पूरा हुआ"
+      },
+      en: {
+        langBtn: "हिन्दी",
+        shopPrefix: "Shop:",
+        shopQr: "QR",
+        galla: "Daily Sales",
+        tabOrders: "Live Orders",
+        tabKhata: "Khata (Ledger)",
+        liveHeading: "Active Live Orders",
+        walkinHeading: "Add Walk-in Customer",
+        cName: "Customer Name",
+        cPhone: "WhatsApp Number (10 digits)",
+        cOrder: "Items / Job Details",
+        cAmount: "Total Bill (₹ Amount)",
+        btnSave: "Save Order & Send WhatsApp",
+        khataTitle: "Digital Khata Ledger",
+        khataSub: "Track customer credit balances. Send 10-day WhatsApp statements or mark as paid.",
+        noOrders: "No pending orders right now.",
+        noKhata: "No pending credit dues.",
+        delayBtn: "⚠️ +10m Delay",
+        readyBtn: "✅ Out for Delivery",
+        doneBtn: "🎉 Complete"
+      }
+    };
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'hi' ? 'en' : 'hi';
+      applyLanguage();
+    }
+
+    function applyLanguage() {
+      const t = i18n[currentLang];
+      document.getElementById('langBtnText').innerText = t.langBtn;
+      document.getElementById('lblShopPrefix').innerText = t.shopPrefix;
+      document.getElementById('btnShopQr').innerText = t.shopQr;
+      document.getElementById('btnGalla').innerText = t.galla;
+      document.getElementById('tabOrdersText').innerText = t.tabOrders;
+      document.getElementById('tabKhataText').innerText = t.tabKhata;
+      document.getElementById('lblLiveHeading').innerHTML = `<i class="fa-solid fa-fire text-orange-500 mr-1.5"></i> ${t.liveHeading}`;
+      document.getElementById('lblWalkinHeading').innerHTML = `<i class="fa-solid fa-circle-plus text-orange-500 mr-2"></i> ${t.walkinHeading}`;
+      document.getElementById('lblCName').innerText = t.cName;
+      document.getElementById('lblCPhone').innerText = t.cPhone;
+      document.getElementById('lblCOrder').innerText = t.cOrder;
+      document.getElementById('lblCAmount').innerText = t.cAmount;
+      document.getElementById('btnSaveText').innerText = t.btnSave;
+      document.getElementById('lblKhataTitle').innerHTML = `<i class="fa-solid fa-book-bookmark mr-2 text-amber-700"></i> ${t.khataTitle}`;
+      document.getElementById('lblKhataSub').innerText = t.khataSub;
+      fetchOrders();
+    }
 
     function applyShopProfile() {
       document.getElementById('hdrShopName').innerText = shopProfile.name;
@@ -279,7 +363,6 @@
       document.getElementById('cfgShopPhone').value = shopProfile.phone;
       document.getElementById('cfgShopUpi').value = shopProfile.upi;
 
-      // कस्टमर ऑर्डर लिंक और QR
       const custUrl = `https://eevanventures-sketch.github.io/Saarthi/order.html?shop=${shopProfile.phone}&name=${encodeURIComponent(shopProfile.name)}&upi=${encodeURIComponent(shopProfile.upi)}`;
       const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(custUrl)}`;
       
@@ -287,13 +370,8 @@
       document.getElementById('qrPreviewArea').classList.remove('hidden');
     }
 
-    function openShopModal() {
-      applyShopProfile();
-      document.getElementById('shopModal').classList.remove('hidden');
-    }
-    function closeShopModal() {
-      document.getElementById('shopModal').classList.add('hidden');
-    }
+    function openShopModal() { applyShopProfile(); document.getElementById('shopModal').classList.remove('hidden'); }
+    function closeShopModal() { document.getElementById('shopModal').classList.add('hidden'); }
 
     function saveShopProfile() {
       shopProfile.name = document.getElementById('cfgShopName').value.trim() || 'मेरी दुकान';
@@ -359,7 +437,9 @@
       });
     }
 
+    // ================= FETCH LIVE ORDERS =================
     async function fetchOrders() {
+      const t = i18n[currentLang];
       try {
         const targetUrl = await getOrdersUrl();
         const res = await fetch(`${targetUrl}?status=neq.completed&order=id.desc`, {
@@ -370,23 +450,27 @@
         
         if(!Array.isArray(orders)) {
           document.getElementById('orderCount').innerText = '0';
-          container.innerHTML = `<div class="text-center py-6 bg-white rounded-2xl border text-gray-400 text-sm">अभी कोई पेंडिंग ऑर्डर नहीं है।</div>`;
+          container.innerHTML = `<div class="text-center py-6 bg-white rounded-2xl border text-gray-400 text-sm">${t.noOrders}</div>`;
           return;
         }
 
-        document.getElementById('orderCount').innerText = orders.length;
+        // जो ऑर्डर लोकल में कम्प्लीट हो चुके हैं उन्हें लाइव से हटाएँ
+        const completedIds = new Set(localCompleted.map(c => String(c.id)));
+        const activeOrders = orders.filter(o => !completedIds.has(String(o.id)));
 
-        if(orders.length === 0) {
-          container.innerHTML = `<div class="text-center py-6 bg-white rounded-2xl border text-gray-400 text-sm">अभी कोई पेंडिंग ऑर्डर नहीं है।</div>`;
+        document.getElementById('orderCount').innerText = activeOrders.length;
+
+        if(activeOrders.length === 0) {
+          container.innerHTML = `<div class="text-center py-6 bg-white rounded-2xl border text-gray-400 text-sm">${t.noOrders}</div>`;
           return;
         }
 
-        orders.forEach(o => {
+        activeOrders.forEach(o => {
           if (o.status === 'pending' && !knownOrderIds.has(o.id)) playChime();
           knownOrderIds.add(o.id);
         });
 
-        container.innerHTML = orders.map(o => {
+        container.innerHTML = activeOrders.map(o => {
           const isPending = o.status === 'pending';
 
           if (isPending) {
@@ -412,10 +496,10 @@
                 <div>
                   <span class="text-xs font-bold text-orange-950 block mb-1.5">⏱️ कितने मिनट में पहुँचाएंगे? (टैप करें):</span>
                   <div class="grid grid-cols-4 gap-1.5">
-                    <button onclick="acceptCustomerOrder('${o.id}', 5, '${o.customer_name}', '${o.customer_phone}', '${o.order_details}', '${o.amount}')" class="py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition">5 मिनट</button>
-                    <button onclick="acceptCustomerOrder('${o.id}', 10, '${o.customer_name}', '${o.customer_phone}', '${o.order_details}', '${o.amount}')" class="py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition">10 मिनट</button>
-                    <button onclick="acceptCustomerOrder('${o.id}', 15, '${o.customer_name}', '${o.customer_phone}', '${o.order_details}', '${o.amount}')" class="py-2 bg-orange-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition">15 मिनट</button>
-                    <button onclick="acceptCustomerOrder('${o.id}', 20, '${o.customer_name}', '${o.customer_phone}', '${o.order_details}', '${o.amount}')" class="py-2 bg-amber-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition">20 मिनट</button>
+                    <button onclick="acceptCustomerOrder('${o.id}', 5, '${o.customer_name}', '${o.customer_phone}', '${o.order_details}', '${o.amount}')" class="py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition">5m</button>
+                    <button onclick="acceptCustomerOrder('${o.id}', 10, '${o.customer_name}', '${o.customer_phone}', '${o.order_details}', '${o.amount}')" class="py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition">10m</button>
+                    <button onclick="acceptCustomerOrder('${o.id}', 15, '${o.customer_name}', '${o.customer_phone}', '${o.order_details}', '${o.amount}')" class="py-2 bg-orange-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition">15m</button>
+                    <button onclick="acceptCustomerOrder('${o.id}', 20, '${o.customer_name}', '${o.customer_phone}', '${o.order_details}', '${o.amount}')" class="py-2 bg-amber-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition">20m</button>
                   </div>
                 </div>
               </div>
@@ -449,13 +533,13 @@
 
               <div class="grid grid-cols-3 gap-2 pt-1 border-t border-gray-100">
                 <button onclick="sendDelay('${o.customer_name}', '${o.customer_phone}')" class="text-xs font-semibold py-1.5 px-1 bg-yellow-50 text-yellow-700 rounded-lg active:scale-95 transition">
-                  ⚠️ +10m देरी
+                  ${t.delayBtn}
                 </button>
                 <button onclick="sendReady('${o.id}', '${o.customer_name}', '${o.customer_phone}')" class="text-xs font-semibold py-1.5 px-1 bg-blue-50 text-blue-700 rounded-lg active:scale-95 transition">
-                  ✅ निकल गया
+                  ${t.readyBtn}
                 </button>
-                <button onclick="openPaymentModal('${o.id}', '${o.amount}')" class="text-xs font-semibold py-1.5 px-1 bg-emerald-600 text-white rounded-lg active:scale-95 transition shadow">
-                  🎉 पूरा हुआ
+                <button onclick="openPaymentModal('${o.id}', '${o.amount}', '${o.order_details}', '${o.customer_name}', '${o.customer_phone}')" class="text-xs font-semibold py-1.5 px-1 bg-emerald-600 text-white rounded-lg active:scale-95 transition shadow">
+                  ${t.doneBtn}
                 </button>
               </div>
             </div>
@@ -467,6 +551,7 @@
       }
     }
 
+    // ================= EDIT ORDER =================
     function openEditOrder(id, details, amount) {
       document.getElementById('editOrderId').value = id;
       document.getElementById('editOrderDetails').value = details;
@@ -490,54 +575,83 @@
       fetchOrders();
     }
 
-    function openPaymentModal(id, amount) {
+    // ================= PAYMENT SELECTION & ORDER COMPLETION =================
+    function openPaymentModal(id, amount, details, name, phone) {
       document.getElementById('payOrderId').value = id;
       document.getElementById('payModalAmount').innerText = `₹${amount}`;
+      document.getElementById('payOrderDetails').value = details || '';
+      document.getElementById('payOrderName').value = name || 'ग्राहक';
+      document.getElementById('payOrderPhone').value = phone || '';
       document.getElementById('paymentModal').classList.remove('hidden');
     }
     function closePaymentModal() { document.getElementById('paymentModal').classList.add('hidden'); }
 
     async function confirmComplete(mode) {
       const id = document.getElementById('payOrderId').value;
-      const targetUrl = await getOrdersUrl();
+      const details = document.getElementById('payOrderDetails').value;
+      const name = document.getElementById('payOrderName').value;
+      const phone = document.getElementById('payOrderPhone').value;
+      const amountText = document.getElementById('payModalAmount').innerText.replace('₹', '');
+      const amount = parseInt(amountText) || 0;
 
-      await fetch(`${targetUrl}?id=eq.${id}`, {
-        method: 'PATCH',
-        headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          status: 'completed',
-          payment_status: mode
-        })
-      });
+      const record = {
+        id: id,
+        customer_name: name,
+        customer_phone: phone,
+        order_details: details,
+        amount: amount,
+        payment_status: mode,
+        completed_at: new Date().toISOString()
+      };
+
+      // 1. लोकल स्टोरेज में सेव करें (तुरंत)
+      localCompleted.push(record);
+      localStorage.setItem('saarthi_local_completed', JSON.stringify(localCompleted));
+
+      if (mode === 'udhar') {
+        localKhata.push(record);
+        localStorage.setItem('saarthi_local_khata', JSON.stringify(localKhata));
+      }
 
       closePaymentModal();
-      alert(`ऑर्डर पूरा हुआ! भुगतान: ${mode === 'cash' ? 'नकद' : mode === 'upi' ? 'UPI' : 'उधारी खाते में जोड़ा गया'}`);
+      
+      // स्क्रीन से तुरंत हटाएँ
       fetchOrders();
+
+      // 2. Supabase डेटाबेस में अपडेट भेजें
+      try {
+        const targetUrl = await getOrdersUrl();
+        await fetch(`${targetUrl}?id=eq.${id}`, {
+          method: 'PATCH',
+          headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'completed', payment_status: mode })
+        });
+      } catch (e) {
+        console.log("Database update synced locally");
+      }
+
+      alert(mode === 'cash' ? "नकद भुगतान पूरा हुआ! गल्ले में जुड़ गया।" : mode === 'upi' ? "UPI भुगतान पूरा हुआ! गल्ले में जुड़ गया।" : "उधारी खाते में सफलतापूर्वक जुड़ गया!");
     }
 
     // ================= KHATA LEDGER =================
-    async function loadKhataLedger() {
-      const targetUrl = await getOrdersUrl();
-      const res = await fetch(`${targetUrl}?payment_status=eq.udhar&order=id.desc`, {
-        headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-      });
-      const orders = await res.json();
+    function loadKhataLedger() {
+      const t = i18n[currentLang];
       const container = document.getElementById('khataContainer');
 
-      if(!Array.isArray(orders) || orders.length === 0) {
-        container.innerHTML = `<div class="text-center py-6 bg-white rounded-2xl border text-gray-400 text-sm">अभी किसी का उधारी बकाया नहीं है।</div>`;
+      if (!localKhata || localKhata.length === 0) {
+        container.innerHTML = `<div class="text-center py-6 bg-white rounded-2xl border text-gray-400 text-sm">${t.noKhata}</div>`;
         return;
       }
 
       const khataByCust = {};
-      orders.forEach(o => {
+      localKhata.forEach(o => {
         const key = o.customer_phone || o.customer_name;
         if(!khataByCust[key]) {
           khataByCust[key] = { name: o.customer_name, phone: o.customer_phone, total: 0, orderIds: [], items: [] };
         }
         khataByCust[key].total += (parseInt(o.amount) || 0);
         khataByCust[key].orderIds.push(o.id);
-        khataByCust[key].items.push(`• ${formatDisplayDate(o.created_at)}: ${o.order_details} (₹${o.amount})`);
+        khataByCust[key].items.push(`• ${formatDisplayDate(o.completed_at)}: ${o.order_details} (₹${o.amount})`);
       });
 
       container.innerHTML = Object.values(khataByCust).map(c => `
@@ -562,7 +676,7 @@
               class="py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow flex items-center justify-center space-x-1">
               <i class="fa-brands fa-whatsapp"></i> <span>स्टेटमेंट भेजें</span>
             </button>
-            <button onclick="markKhataPaid('${c.orderIds.join(',')}', '${c.name}')" 
+            <button onclick="markKhataPaid('${c.phone || c.name}', '${c.name}')" 
               class="py-2 bg-blue-600 text-white text-xs font-bold rounded-xl shadow flex items-center justify-center space-x-1">
               <i class="fa-solid fa-check"></i> <span>हिसाब चुकता</span>
             </button>
@@ -578,47 +692,54 @@
       window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
     }
 
-    async function markKhataPaid(orderIdsStr, name) {
+    function markKhataPaid(key, name) {
       if(!confirm(`${name} का सारा बकाया हिसाब चुकता (Paid) मार्क करें?`)) return;
-      const ids = orderIdsStr.split(',');
-      const targetUrl = await getOrdersUrl();
-
-      for (let id of ids) {
-        await fetch(`${targetUrl}?id=eq.${id}`, {
-          method: 'PATCH',
-          headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ payment_status: 'paid' })
-        });
-      }
-      alert(`${name} का हिसाब चुकता मार्क कर दिया गया!`);
+      localKhata = localKhata.filter(o => (o.customer_phone || o.customer_name) !== key);
+      localStorage.setItem('saarthi_local_khata', JSON.stringify(localKhata));
+      alert(`${name} का हिसाब चुकता हो गया!`);
       loadKhataLedger();
     }
 
-    // ================= DAILY SUMMARY =================
-    async function openDailySummary() {
-      const targetUrl = await getOrdersUrl();
-      const res = await fetch(`${targetUrl}?status=eq.completed&order=id.desc`, {
-        headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-      });
-      const orders = await res.json();
+    // ================= DAILY SUMMARY & TRANSACTION LIST =================
+    function openDailySummary() {
+      let cash = 0, upi = 0, udhar = 0, total = 0;
       
-      let cash = 0, upi = 0, udhar = 0, total = 0, count = 0;
-      if (Array.isArray(orders)) {
-        orders.forEach(o => {
+      const listContainer = document.getElementById('dailyOrdersList');
+      if (localCompleted.length === 0) {
+        listContainer.innerHTML = `<p class="text-gray-400 text-center py-4">आज अभी तक कोई ऑर्डर पूरा नहीं हुआ है।</p>`;
+      } else {
+        listContainer.innerHTML = localCompleted.map(o => {
           const amt = parseInt(o.amount) || 0;
           total += amt;
-          count++;
           if(o.payment_status === 'cash') cash += amt;
           else if(o.payment_status === 'upi') upi += amt;
           else if(o.payment_status === 'udhar') udhar += amt;
-        });
+
+          const badge = o.payment_status === 'cash' 
+            ? `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold text-[10px]">💵 Cash</span>`
+            : o.payment_status === 'upi'
+            ? `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold text-[10px]">📱 UPI</span>`
+            : `<span class="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-bold text-[10px]">📒 उधार</span>`;
+
+          return `
+            <div class="p-2 bg-gray-50 rounded-lg border border-gray-200 flex justify-between items-center">
+              <div>
+                <span class="font-bold text-gray-800">${o.customer_name}</span>
+                <span class="text-gray-400 text-[10px] block">${formatDisplayDate(o.completed_at)} • ${o.order_details}</span>
+              </div>
+              <div class="text-right">
+                <span class="font-black text-gray-900 block">₹${amt}</span>
+                ${badge}
+              </div>
+            </div>
+          `;
+        }).reverse().join('');
       }
 
       document.getElementById('sumCash').innerText = `₹${cash}`;
       document.getElementById('sumUpi').innerText = `₹${upi}`;
       document.getElementById('sumUdhar').innerText = `₹${udhar}`;
       document.getElementById('sumTotal').innerText = `₹${total}`;
-      document.getElementById('sumCount').innerText = count;
 
       document.getElementById('dailyModal').classList.remove('hidden');
     }
@@ -684,8 +805,8 @@
     }
 
     applyShopProfile();
+    applyLanguage();
     setInterval(fetchOrders, 4000);
-    fetchOrders();
   </script>
 </body>
-</html>
+    </html>
