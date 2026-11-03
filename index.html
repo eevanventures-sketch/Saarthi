@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>सारथी - Saarthi v3.2</title>
+  <title>सारथी - Saarthi v3.4</title>
   
   <meta name="theme-color" content="#ea580c">
   <meta name="mobile-web-app-capable" content="yes">
@@ -33,7 +33,7 @@
         <div class="flex items-center space-x-2">
           <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Logo" class="w-7 h-7 bg-white rounded-lg p-0.5 shadow">
           <span class="text-2xl font-black tracking-wide">सारथी</span>
-          <span class="text-[9px] bg-black bg-opacity-30 px-1.5 py-0.5 rounded-full font-bold">v3.2</span>
+          <span class="text-[9px] bg-black bg-opacity-30 px-1.5 py-0.5 rounded-full font-bold">v3.4</span>
         </div>
         <p class="text-[11px] text-orange-100 font-medium">
           दुकान: <span id="hdrShopName" class="font-bold text-white underline">मेरी दुकान</span>
@@ -142,8 +142,8 @@
           </div>
 
           <button onclick="createOrder()" id="saveBtn" class="w-full mt-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold py-3.5 rounded-xl shadow-md active:scale-95 transition flex items-center justify-center space-x-2">
-            <i class="fa-brands fa-whatsapp text-xl"></i>
-            <span>ऑर्डर जोड़ें और WhatsApp भेजें</span>
+            <i class="fa-solid fa-floppy-disk text-lg"></i>
+            <span>ऑर्डर दर्ज करें</span>
           </button>
         </div>
       </div>
@@ -193,12 +193,12 @@
     </div>
   </div>
 
-  <!-- ================= SHOP PROFILE & QR MODAL ================= -->
+  <!-- ================= SHOP PROFILE & CLOUD API MODAL ================= -->
   <div id="shopModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 no-print">
     <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-4 shadow-xl max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center border-b pb-2">
         <h3 class="text-sm font-bold text-gray-900 flex items-center">
-          <i class="fa-solid fa-store text-orange-500 mr-2"></i> मेरी दुकान प्रोफाइल व QR कोड
+          <i class="fa-solid fa-store text-orange-500 mr-2"></i> दुकान प्रोफाइल व ऑटोमेशन
         </h3>
         <button onclick="closeShopModal()" class="text-gray-400 text-lg font-bold">✕</button>
       </div>
@@ -216,6 +216,15 @@
           <label class="text-xs font-semibold text-gray-600">दुकान की UPI ID</label>
           <input id="cfgShopUpi" type="text" class="w-full mt-1 p-2 text-sm border rounded-xl" placeholder="उदा. sharma@okaxis">
         </div>
+
+        <!-- Meta WhatsApp Cloud API Settings (Optional) -->
+        <div class="bg-orange-50 p-2.5 rounded-xl border border-orange-200 space-y-1.5">
+          <span class="text-[11px] font-bold text-orange-950 block">⚡ Meta WhatsApp Cloud API (बैकग्राउंड मैसेज)</span>
+          <input id="cfgMetaPhoneId" type="text" class="w-full p-1.5 text-xs border rounded-lg" placeholder="Meta Phone Number ID (वैकल्पिक)">
+          <input id="cfgMetaToken" type="password" class="w-full p-1.5 text-xs border rounded-lg" placeholder="Meta Permanent Access Token (वैकल्पिक)">
+          <p class="text-[10px] text-gray-500">यदि API खाली है, तो भी 1-क्लिक में ग्राहक के स्क्रीन पर ऑटोमैटिक टाइमर चलेगा!</p>
+        </div>
+
         <button onclick="saveShopProfile()" class="w-full py-2.5 bg-orange-600 text-white text-xs font-bold rounded-xl shadow">
           सेव करें और QR कोड बनाएं
         </button>
@@ -287,12 +296,12 @@
             <span id="pdfUpi" class="font-bold">₹0</span>
           </div>
           <div class="flex justify-between text-gray-600">
-            <span>उधारी (Credit):</span>
-            <span id="pdfUdhar" class="font-bold">₹0</span>
+            <span>बाज़ार में शेष उधारी:</span>
+            <span id="pdfUdhar" class="font-bold text-red-600">₹0</span>
           </div>
           <div class="flex justify-between text-sm font-black text-gray-900 pt-1 border-t">
-            <span>कुल रकम (Grand Total):</span>
-            <span id="pdfTotal" class="text-base text-orange-600">₹0</span>
+            <span>कुल प्राप्त इनकम (Total Received):</span>
+            <span id="pdfTotal" class="text-base text-emerald-600">₹0</span>
           </div>
         </div>
 
@@ -305,7 +314,7 @@
     </div>
   </div>
 
-  <!-- ================= ADVANCED GALLA & DATE FILTER MODAL ================= -->
+  <!-- ================= ADVANCED GALLA MODAL (स्मार्ट गल्ला) ================= -->
   <div id="dailyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-3 no-print">
     <div class="bg-white rounded-2xl p-4 max-w-sm w-full space-y-3 shadow-xl max-h-[92vh] flex flex-col">
       
@@ -335,12 +344,12 @@
           <span id="sumUpi" class="text-base font-black text-blue-700">₹0</span>
         </div>
         <div class="bg-amber-50 p-2 rounded-xl border border-amber-200">
-          <span class="text-[10px] text-amber-800 font-bold block">📒 उधारी बिक्री</span>
+          <span class="text-[10px] text-amber-900 font-bold block">📒 वर्तमान शेष उधारी</span>
           <span id="sumUdhar" class="text-base font-black text-amber-700">₹0</span>
         </div>
-        <div class="bg-orange-50 p-2 rounded-xl border border-orange-200">
-          <span class="text-[10px] text-orange-800 font-bold block">🎉 कुल प्राप्त इनकम</span>
-          <span id="sumTotal" class="text-base font-black text-orange-700">₹0</span>
+        <div class="bg-emerald-100 p-2 rounded-xl border border-emerald-300">
+          <span class="text-[10px] text-emerald-900 font-bold block">🎉 कुल प्राप्त इनकम</span>
+          <span id="sumTotal" class="text-base font-black text-emerald-800">₹0</span>
         </div>
       </div>
 
@@ -386,7 +395,7 @@
     </div>
   </div>
 
-  <!-- ================= KHATA SETTLEMENT PAYMENT MODAL (उधारी वसूली) ================= -->
+  <!-- ================= KHATA SETTLEMENT MODAL ================= -->
   <div id="settleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 no-print">
     <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-4 shadow-xl text-center">
       <h3 class="text-base font-bold text-gray-900">उधारी का पैसा किसमें मिला?</h3>
@@ -444,7 +453,7 @@
     let audioContext = null;
     let khataSubTab = 'pending';
     let audioInitialized = false;
-    let activeGallaPeriod = 'today'; // 'today', 'yesterday', '7days', '30days'
+    let activeGallaPeriod = 'today';
 
     // Local Storage Stores
     let localKhata = JSON.parse(localStorage.getItem('saarthi_local_khata')) || [];
@@ -463,7 +472,9 @@
     let shopProfile = JSON.parse(localStorage.getItem('saarthi_shop_profile')) || {
       name: 'शर्मा जी टी स्टॉल',
       phone: '9876543210',
-      upi: 'sharma@upi'
+      upi: 'sharma@upi',
+      metaPhoneId: '',
+      metaToken: ''
     };
 
     function initAudioOnUserGesture() {
@@ -499,9 +510,15 @@
       speakOrderAlert({ customer_name: 'राहुल शर्मा' });
     }
 
-    // Google Maps Link Parser (100% Reliable Detection)
+    // Google Maps Turn-by-Turn Navigation URL Extractor & Generator
     function extractMapsUrl(details) {
       if(!details) return null;
+      const coordMatch = details.match(/q=([0-9\.\-]+),([0-9\.\-]+)/);
+      if(coordMatch) {
+        const lat = coordMatch[1];
+        const lng = coordMatch[2];
+        return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=walking`;
+      }
       const match = details.match(/https?:\/\/[^\s<"']+/i);
       if(match && match[0].includes('google.com/maps')) {
         return match[0].trim();
@@ -509,14 +526,13 @@
       return null;
     }
 
-    // Delivery Boy WhatsApp Dispatch
     function dispatchToDeliveryBoy(custName, custPhone, details, amount, mapsUrl) {
       const boyPhone = prompt("डिलीवरी बॉय का WhatsApp नंबर दर्ज करें (10 अंक):");
       if(!boyPhone || boyPhone.trim().length < 10) return;
 
       const cleanPhone = '91' + boyPhone.replace(/[^0-9]/g, '').slice(-10);
       const cleanDetails = details.replace(/\|?\s*📍\s*https?:\/\/[^\s]+/gi, '').trim();
-      const mapsText = mapsUrl ? `\n\n📍 *गूगल मैप रास्ता (क्लिक करें):*\n${mapsUrl}` : '';
+      const mapsText = mapsUrl ? `\n\n📍 *गूगल मैप सीधा रास्ता:*\n${mapsUrl}` : '';
 
       const msg = encodeURIComponent(`🛵 *नया डिलीवरी टास्क - ${shopProfile.name}*\n\n👤 *ग्राहक:* ${custName}\n📞 *नंबर:* ${custPhone}\n📦 *सामान:* ${cleanDetails}\n💰 *लेने वाली रकम:* ₹${amount}${mapsText}\n\nतुरंत पहुँचाओ!`);
       window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
@@ -606,7 +622,6 @@
       return items.join(', ');
     }
 
-    // Menu Settings
     function openMenuEditor() {
       const container = document.getElementById('menuEditList');
       container.innerHTML = shopMenu.map((m, idx) => `
@@ -638,12 +653,13 @@
       alert("मेनू और रेट सफलतापूर्वक सेव हो गए!");
     }
 
-    // Shop Profile & QR
     function applyShopProfile() {
       document.getElementById('hdrShopName').innerText = shopProfile.name;
       document.getElementById('cfgShopName').value = shopProfile.name;
       document.getElementById('cfgShopPhone').value = shopProfile.phone;
       document.getElementById('cfgShopUpi').value = shopProfile.upi;
+      document.getElementById('cfgMetaPhoneId').value = shopProfile.metaPhoneId || '';
+      document.getElementById('cfgMetaToken').value = shopProfile.metaToken || '';
 
       const custUrl = `https://eevanventures-sketch.github.io/Saarthi/order.html?shop=${shopProfile.phone}&name=${encodeURIComponent(shopProfile.name)}&upi=${encodeURIComponent(shopProfile.upi)}`;
       const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(custUrl)}`;
@@ -659,9 +675,11 @@
       shopProfile.name = document.getElementById('cfgShopName').value.trim() || 'मेरी दुकान';
       shopProfile.phone = document.getElementById('cfgShopPhone').value.trim() || '';
       shopProfile.upi = document.getElementById('cfgShopUpi').value.trim() || '';
+      shopProfile.metaPhoneId = document.getElementById('cfgMetaPhoneId').value.trim();
+      shopProfile.metaToken = document.getElementById('cfgMetaToken').value.trim();
       localStorage.setItem('saarthi_shop_profile', JSON.stringify(shopProfile));
       applyShopProfile();
-      alert("दुकान प्रोफाइल व QR कोड सेव हो गया!");
+      alert("दुकान प्रोफाइल व सेटिंग्स सेव हो गई!");
     }
 
     function shareShopLink() {
@@ -764,7 +782,7 @@
       });
     }
 
-    // ================= FETCH LIVE ORDERS WITH BIG MAP BUTTON =================
+    // ================= FETCH LIVE ORDERS WITH 1-TAP IN-APP CONFIRM =================
     async function fetchOrders() {
       try {
         const targetUrl = await getOrdersUrl();
@@ -802,13 +820,12 @@
           const mapsUrl = extractMapsUrl(o.order_details);
           const cleanDetails = o.order_details.replace(/\|?\s*📍\s*https?:\/\/[^\s]+/gi, '').trim();
 
-          // बड़ा स्पष्ट और चमकीला गूगल मैप्स नेविगेशन बटन
           const mapButtonFull = mapsUrl ? `
             <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" 
-              class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center space-x-2 transition my-1 border-2 border-blue-400">
+              class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center space-x-2 transition my-1.5 border border-blue-400">
               <span class="text-base text-yellow-300">📍</span>
-              <span>गूगल मैप नेविगेशन (सीधा रास्ता देखें)</span>
-              <span class="text-[10px] bg-white bg-opacity-20 px-1.5 py-0.5 rounded">OPEN MAP</span>
+              <span>गूगल मैप नेविगेशन (टर्न-बाय-टर्न रास्ता शुरू करें)</span>
+              <span class="text-[9px] bg-white bg-opacity-20 px-1.5 py-0.5 rounded font-bold">START</span>
             </a>
           ` : '';
 
@@ -847,12 +864,24 @@
                 </div>
 
                 <div>
-                  <span class="text-xs font-bold text-orange-950 block mb-1.5">⏱️ कितने मिनट में पहुँचाएंगे? (टैप करें):</span>
+                  <span class="text-xs font-bold text-orange-950 block mb-1.5">⏱️ कितने मिनट में पहुँचाएंगे? (टैप करें - स्क्रीन नहीं बदलेगी):</span>
                   <div class="grid grid-cols-4 gap-1.5">
-                    <button onclick="acceptCustomerOrder('${o.id}', 5, '${o.customer_name}', '${o.customer_phone}', '${o.order_details.replace(/'/g, "\\'")}', '${o.amount}')" class="py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition">5m</button>
-                    <button onclick="acceptCustomerOrder('${o.id}', 10, '${o.customer_name}', '${o.customer_phone}', '${o.order_details.replace(/'/g, "\\'")}', '${o.amount}')" class="py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition">10m</button>
-                    <button onclick="acceptCustomerOrder('${o.id}', 15, '${o.customer_name}', '${o.customer_phone}', '${o.order_details.replace(/'/g, "\\'")}', '${o.amount}')" class="py-2 bg-orange-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition">15m</button>
-                    <button onclick="acceptCustomerOrder('${o.id}', 20, '${o.customer_name}', '${o.customer_phone}', '${o.order_details.replace(/'/g, "\\'")}', '${o.amount}')" class="py-2 bg-amber-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition">20m</button>
+                    <button onclick="acceptCustomerOrder('${o.id}', 5, '${o.customer_name}', '${o.customer_phone}', '${o.order_details.replace(/'/g, "\\'")}', '${o.amount}')" class="py-2.5 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition flex flex-col items-center">
+                      <span>5m</span>
+                      <span class="text-[9px] opacity-80">स्वीकारें</span>
+                    </button>
+                    <button onclick="acceptCustomerOrder('${o.id}', 10, '${o.customer_name}', '${o.customer_phone}', '${o.order_details.replace(/'/g, "\\'")}', '${o.amount}')" class="py-2.5 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition flex flex-col items-center">
+                      <span>10m</span>
+                      <span class="text-[9px] opacity-80">स्वीकारें</span>
+                    </button>
+                    <button onclick="acceptCustomerOrder('${o.id}', 15, '${o.customer_name}', '${o.customer_phone}', '${o.order_details.replace(/'/g, "\\'")}', '${o.amount}')" class="py-2.5 bg-orange-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition flex flex-col items-center">
+                      <span>15m</span>
+                      <span class="text-[9px] opacity-80">स्वीकारें</span>
+                    </button>
+                    <button onclick="acceptCustomerOrder('${o.id}', 20, '${o.customer_name}', '${o.customer_phone}', '${o.order_details.replace(/'/g, "\\'")}', '${o.amount}')" class="py-2.5 bg-amber-600 text-white font-bold text-xs rounded-xl shadow active:scale-95 transition flex flex-col items-center">
+                      <span>20m</span>
+                      <span class="text-[9px] opacity-80">स्वीकारें</span>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -980,10 +1009,13 @@
         });
       } catch (e) {}
 
-      alert(mode === 'cash' ? "नकद भुगतान पूरा हुआ! गल्ले में जुड़ गया।" : mode === 'upi' ? "UPI भुगतान पूरा हुआ! गल्ले में जुड़ गया।" : "उधारी खाते में सफलतापूर्वक जुड़ गया!");
+      // अगर WhatsApp Cloud API है तो बैकग्राउंड में रसीद भेजें
+      if(phone && mode !== 'udhar' && shopProfile.metaPhoneId && shopProfile.metaToken) {
+        sendMetaCloudMessage(phone, `नमस्ते ${name} जी! 🙏\n${shopProfile.name} पर आपका ₹${amount} का भुगतान प्राप्त हो गया है। धन्यवाद!`);
+      }
     }
 
-    // ================= KHATA SETTLEMENT & RECOVERY INTO INCOME =================
+    // ================= KHATA SETTLEMENT & REAL-TIME RECOVERY =================
     function promptSettlePayment(key, name, total) {
       document.getElementById('settleKey').value = key;
       document.getElementById('settleRawAmount').value = total;
@@ -1001,11 +1033,11 @@
       const total = parseInt(document.getElementById('settleRawAmount').value) || 0;
       const name = document.getElementById('settleCustomerName').innerText.split(' ')[0];
 
-      // 1. उधारी खाते से हटायें
+      // 1. उधारी खाते से 100% साफ़ करें
       localKhata = localKhata.filter(o => (o.customer_phone || o.customer_name) !== key);
       localStorage.setItem('saarthi_local_khata', JSON.stringify(localKhata));
 
-      // 2. चुकता इतिहास में डालें
+      // 2. चुकता इतिहास में जोड़ें
       localSettled.push({
         name: name,
         key: key,
@@ -1015,11 +1047,11 @@
       });
       localStorage.setItem('saarthi_local_settled', JSON.stringify(localSettled));
 
-      // 3. जादू: आज की नकद/UPI इनकम और गल्ले में जोड़ें!
+      // 3. आज के कैश/UPI गल्ले में वसूली दर्ज करें
       localCompleted.push({
         id: 'settle_' + Date.now(),
         customer_name: `${name} (उधारी वसूली)`,
-        order_details: `पुराना उधारी खाता चुकता हुआ (${receivedMode.toUpperCase()})`,
+        order_details: `उधारी खाता चुकता हुआ (${receivedMode.toUpperCase()})`,
         amount: total,
         payment_status: receivedMode,
         completed_at: new Date().toISOString()
@@ -1027,7 +1059,7 @@
       localStorage.setItem('saarthi_local_completed', JSON.stringify(localCompleted));
 
       closeSettleModal();
-      alert(`₹${total} का उधारी हिसाब चुकता हो गया और आज के ${receivedMode === 'cash' ? 'नकद (Cash)' : 'UPI'} गल्ले में जुड़ गया!`);
+      alert(`₹${total} का उधारी हिसाब चुकता हो गया और आज के गल्ले में जुड़ गया!`);
       loadKhataLedger();
     }
 
@@ -1036,7 +1068,7 @@
 
       if (khataSubTab === 'pending') {
         if (!localKhata || localKhata.length === 0) {
-          container.innerHTML = `<div class="text-center py-6 bg-white rounded-2xl border text-gray-400 text-sm">अभी किसी का उधारी बकाया नहीं है।</div>`;
+          container.innerHTML = `<div class="text-center py-6 bg-white rounded-2xl border text-gray-400 text-sm">अभी किसी का उधारी बकाया नहीं है। बाज़ार से सब हिसाब चुकता है! ✅</div>`;
           return;
         }
 
@@ -1058,7 +1090,7 @@
                 <span class="text-xs text-gray-400">${c.phone || ''}</span>
               </div>
               <div class="text-right">
-                <span class="text-xs text-red-600 font-bold block">कुल बकाया</span>
+                <span class="text-xs text-red-600 font-bold block">वास्तविक बकाया</span>
                 <span class="text-lg font-black text-red-600">₹${c.total}</span>
               </div>
             </div>
@@ -1098,7 +1130,7 @@
             </div>
             <div class="text-right">
               <span class="text-xs font-black text-emerald-700 block">₹${s.amount} Paid</span>
-              <span class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">हिसाब चुकता</span>
+              <span class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">हिसाब चुकता ✅</span>
             </div>
           </div>
         `).reverse().join('');
@@ -1108,11 +1140,11 @@
     function sendKhataStatement(name, phone, total, items) {
       if(!phone) { alert("फोन नंबर उपलब्ध नहीं है!"); return; }
       const itemsText = items.join('\n');
-      const msg = encodeURIComponent(`नमस्ते ${name} जी! 🙏\n*${shopProfile.name} - आपका उधारी खाता विवरण*\n\n${itemsText}\n\n-------------------------------\n💰 *कुल बकाया राशि: ₹${total}*\n\nकृपया सुविधा अनुसार भुगतान करें। धन्यवाद!\n*सारथी • eevaan benchers*`);
+      const msg = encodeURIComponent(`नमस्ते ${name} जी! 🙏\n*${shopProfile.name} - आपका उधारी खाता विवरण*\n\n${itemsText}\n\n-------------------------------\n💰 *वर्तमान बकाया राशि: ₹${total}*\n\nकृपया सुविधा अनुसार भुगतान करें। धन्यवाद!\n*सारथी • eevaan benchers*`);
       window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
     }
 
-    // ================= SMART GALLA WITH DATE PERIOD FILTERS =================
+    // ================= SMART GALLA: ACTUAL PENDING UDHAR ONLY =================
     function setGallaPeriod(period) {
       activeGallaPeriod = period;
       ['today', 'yesterday', '7days', '30days'].forEach(p => {
@@ -1157,7 +1189,7 @@
         return true;
       });
 
-      let cash = 0, upi = 0, udhar = 0, totalIncome = 0;
+      let cash = 0, upi = 0, totalIncome = 0;
       filteredOrders.forEach(o => {
         const amt = parseInt(o.amount) || 0;
         if(o.payment_status === 'cash') {
@@ -1166,14 +1198,14 @@
         } else if(o.payment_status === 'upi') {
           upi += amt;
           totalIncome += amt;
-        } else if(o.payment_status === 'udhar') {
-          udhar += amt;
         }
       });
 
+      let actualPendingUdhar = localKhata.reduce((sum, o) => sum + (parseInt(o.amount) || 0), 0);
+
       document.getElementById('sumCash').innerText = `₹${cash}`;
       document.getElementById('sumUpi').innerText = `₹${upi}`;
-      document.getElementById('sumUdhar').innerText = `₹${udhar}`;
+      document.getElementById('sumUdhar').innerText = `₹${actualPendingUdhar}`;
       document.getElementById('sumTotal').innerText = `₹${totalIncome}`;
 
       const listContainer = document.getElementById('dailyOrdersList');
@@ -1182,11 +1214,18 @@
       } else {
         listContainer.innerHTML = filteredOrders.map(o => {
           const amt = parseInt(o.amount) || 0;
-          const badge = o.payment_status === 'cash' 
-            ? `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold text-[10px]">💵 Cash</span>`
-            : o.payment_status === 'upi'
-            ? `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold text-[10px]">📱 UPI</span>`
-            : `<span class="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-bold text-[10px]">📒 उधार</span>`;
+          
+          let badge = '';
+          if(o.payment_status === 'cash') {
+            badge = `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold text-[10px]">💵 Cash</span>`;
+          } else if(o.payment_status === 'upi') {
+            badge = `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold text-[10px]">📱 UPI</span>`;
+          } else if(o.payment_status === 'udhar') {
+            const isStillPending = localKhata.some(k => String(k.id) === String(o.id));
+            badge = isStillPending
+              ? `<span class="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-bold text-[10px]">📒 उधार (बाकी ⏳)</span>`
+              : `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold text-[10px]">📒 उधार (चुकता ✅)</span>`;
+          }
 
           return `
             <div class="p-2 bg-gray-50 rounded-lg border border-gray-200 flex justify-between items-center">
@@ -1216,7 +1255,7 @@
       document.getElementById('pdfDate').innerText = formatDisplayDate(new Date().toISOString());
 
       const tbody = document.getElementById('pdfTableBody');
-      let cash = 0, upi = 0, udhar = 0, total = 0;
+      let cash = 0, upi = 0, total = 0;
 
       if (type === 'daily') {
         document.getElementById('pdfType').innerText = `गल्ला रिपोर्ट (${activeGallaPeriod === 'today' ? 'आज' : activeGallaPeriod === 'yesterday' ? 'कल' : activeGallaPeriod})`;
@@ -1226,10 +1265,8 @@
         } else {
           tbody.innerHTML = localCompleted.map(o => {
             const amt = parseInt(o.amount) || 0;
-            total += amt;
-            if(o.payment_status === 'cash') cash += amt;
-            else if(o.payment_status === 'upi') upi += amt;
-            else if(o.payment_status === 'udhar') udhar += amt;
+            if(o.payment_status === 'cash') { cash += amt; total += amt; }
+            else if(o.payment_status === 'upi') { upi += amt; total += amt; }
 
             return `
               <tr class="border-b border-gray-100">
@@ -1247,22 +1284,22 @@
         
         tbody.innerHTML = custOrders.map(o => {
           const amt = parseInt(o.amount) || 0;
-          total += amt;
-          udhar += amt;
           return `
             <tr class="border-b border-gray-100">
               <td class="py-2"><b>${custName}</b><br><span class="text-[10px] text-gray-400">${formatDisplayDate(o.completed_at)}</span></td>
               <td class="py-2">${o.order_details.replace(/\|?\s*📍\s*https?:\/\/[^\s]+/gi, '')}</td>
-              <td class="py-2 text-center font-bold text-[10px] text-amber-700">उधार</td>
+              <td class="py-2 text-center font-bold text-[10px] text-amber-700">उधार (शेष)</td>
               <td class="py-2 text-right font-black">₹${amt}</td>
             </tr>
           `;
         }).join('');
       }
 
+      let actualPendingUdhar = localKhata.reduce((sum, o) => sum + (parseInt(o.amount) || 0), 0);
+
       document.getElementById('pdfCash').innerText = `₹${cash}`;
       document.getElementById('pdfUpi').innerText = `₹${upi}`;
-      document.getElementById('pdfUdhar').innerText = `₹${udhar}`;
+      document.getElementById('pdfUdhar').innerText = `₹${actualPendingUdhar}`;
       document.getElementById('pdfTotal').innerText = `₹${total}`;
 
       document.getElementById('pdfModal').classList.remove('hidden');
@@ -1271,20 +1308,50 @@
     function closePdfModal() { document.getElementById('pdfModal').classList.add('hidden'); }
     function triggerPrintPdf() { window.print(); }
 
+    // ================= 1-TAP IN-APP ACCEPT (NO WHATSAPP REDIRECT) =================
     async function acceptCustomerOrder(id, mins, name, phone, details, amount) {
       const targetUrl = await getOrdersUrl();
+      
+      // 1. Supabase में तुरंत टाइमर अपडेट करें (ग्राहक स्क्रीन पर लाइव टाइमर चालू हो जाएगा)
       await fetch(`${targetUrl}?id=eq.${id}`, {
         method: 'PATCH',
         headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'accepted', eta_minutes: mins })
       });
 
-      if(phone) {
+      // 2. यदि Meta WhatsApp Cloud API सेट है तो बैकग्राउंड में साइलेंटली भेजें
+      if(phone && shopProfile.metaPhoneId && shopProfile.metaToken) {
         const cleanDetails = details.replace(/\|?\s*📍\s*https?:\/\/[^\s]+/gi, '').trim();
-        const msg = encodeURIComponent(`नमस्ते ${name} जी! 🙏\n*${shopProfile.name}* द्वारा आपका ऑर्डर स्वीकार कर लिया गया है।\n\n📌 *ऑर्डर:* ${cleanDetails}\n⏱️ *पहुँचने का समय:* अगले *${mins} मिनट* में!\n💰 *बिल:* ₹${amount}\n\nधन्यवाद! — *सारथी*`);
-        window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+        const apiMsg = `नमस्ते ${name} जी! 🙏\n${shopProfile.name} द्वारा आपका ऑर्डर स्वीकार कर लिया गया है।\n📌 ऑर्डर: ${cleanDetails}\n⏱️ समय: अगले ${mins} मिनट में तैयार!\n💰 बिल: ₹${amount}`;
+        sendMetaCloudMessage(phone, apiMsg);
       }
+
+      // 3. दुकानदार स्क्रीन पर ही रहेगा, 1 सेकंड में रीफ्रेश हो जाएगा!
       fetchOrders();
+    }
+
+    // Meta WhatsApp Cloud API Sender Function
+    async function sendMetaCloudMessage(recipientPhone, messageText) {
+      try {
+        let clean = recipientPhone.replace(/[^0-9]/g, '');
+        if(clean.length === 10) clean = '91' + clean;
+
+        await fetch(`https://graph.facebook.com/v18.0/${shopProfile.metaPhoneId}/messages`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${shopProfile.metaToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            messaging_product: 'whatsapp',
+            to: clean,
+            type: 'text',
+            text: { body: messageText }
+          })
+        });
+      } catch(e) {
+        console.log("Meta API send failed", e);
+      }
     }
 
     function sendDelay(name, phone) {
@@ -1327,12 +1394,6 @@
         })
       });
 
-      if(phone) {
-        const nowStr = formatDisplayDate(new Date().toISOString());
-        const msg = encodeURIComponent(`नमस्ते ${name} जी! 🙏\n*${shopProfile.name}* पर आपका ऑर्डर दर्ज हो गया है।\n\n📌 *ऑर्डर:* ${details}\n📅 *समय:* ${nowStr}\n💰 *कुल बिल:* ₹${amount}\n\nधन्यवाद! — *सारथी*`);
-        window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
-      }
-
       document.getElementById('cName').value = '';
       document.getElementById('cPhone').value = '';
       document.getElementById('itemRowsContainer').innerHTML = '';
@@ -1351,4 +1412,4 @@
     setInterval(fetchOrders, 4000);
   </script>
 </body>
-  </html>
+            </html>
