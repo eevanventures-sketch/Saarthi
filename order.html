@@ -20,7 +20,7 @@
           <span class="text-[10px] bg-black bg-opacity-30 px-2 py-0.5 rounded-full uppercase">Customer Order</span>
         </div>
         <p class="text-[11px] text-orange-100">
-          Powered by <span class="font-bold text-white underline">eevaan benchers</span>
+          दुकान: <span id="shopTitleHeader" class="font-bold text-white underline">शर्मा जी टी स्टॉल</span>
         </p>
       </div>
 
@@ -43,7 +43,7 @@
         </div>
         <div>
           <h1 id="lblShopTitle" class="text-sm font-bold text-gray-900">चाय-नाश्ता त्वरित ऑर्डर</h1>
-          <p id="lblShopSub" class="text-xs text-gray-500">दुकान से सीधा आपके ऑफिस/टेबल पर</p>
+          <p id="lblShopSub" class="text-xs text-gray-500">सीधे आपके ऑफिस/टेबल पर डिलीवरी</p>
         </div>
       </div>
 
@@ -53,35 +53,42 @@
           <i class="fa-solid fa-utensils text-orange-500 mr-2"></i> मेनू चुनें (Select Items)
         </h2>
 
-        <div class="space-y-2.5" id="menuList">
-          <!-- Items populated by JS -->
-        </div>
+        <div class="space-y-2.5" id="menuList"></div>
 
         <div class="mt-3 pt-3 border-t border-gray-100">
-          <label id="lblCustomItem" class="text-xs font-semibold text-gray-600">अन्य कोई निर्देश / स्पेशल ऑर्डर</label>
-          <input id="customNote" type="text" placeholder="उदा. 2 चाय कम शक्कर, 1 बिस्कुट" class="w-full mt-1 p-2.5 text-xs border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-orange-500">
+          <label id="lblCustomItem" class="text-xs font-semibold text-gray-600">विशेष निर्देश (उदा. कम शक्कर, अदरक ज्यादा)</label>
+          <input id="customNote" type="text" placeholder="उदा. 2 चाय कम शक्कर" class="w-full mt-1 p-2.5 text-xs border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-orange-500">
         </div>
       </div>
 
-      <!-- Customer Details Form -->
+      <!-- Delivery & Location Details -->
       <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 space-y-3">
         <h2 id="lblDetailsHeading" class="text-sm font-bold text-gray-800 flex items-center">
-          <i class="fa-solid fa-location-dot text-orange-500 mr-2"></i> आपका विवरण (Delivery Details)
+          <i class="fa-solid fa-location-dot text-orange-500 mr-2"></i> डिलीवरी का पता व लोकेशन
         </h2>
 
         <div>
           <label id="lblCName" class="text-xs font-semibold text-gray-600">आपका नाम</label>
-          <input id="custName" type="text" placeholder="उदा. राहुल भाई" class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-orange-500">
-        </div>
-
-        <div>
-          <label id="lblCLocation" class="text-xs font-semibold text-gray-600">ऑफिस / शॉप / टेबल नंबर</label>
-          <input id="custLocation" type="text" placeholder="उदा. ऑफिस 204, दूसरी मंजिल" class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-orange-500">
+          <input id="custName" type="text" placeholder="उदा. राहुल शर्मा" class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-orange-500">
         </div>
 
         <div>
           <label id="lblCPhone" class="text-xs font-semibold text-gray-600">WhatsApp नंबर (अपडेट पाने के लिए)</label>
           <input id="custPhone" type="tel" placeholder="9876543210" class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
+
+        <div>
+          <label id="lblCLocation" class="text-xs font-semibold text-gray-600">ऑफिस / दुकान / टेबल नंबर</label>
+          <input id="custLocation" type="text" placeholder="उदा. ऑफिस 204, दूसरी मंजिल" class="w-full mt-1 p-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
+
+        <!-- GPS Live Location Button -->
+        <div class="pt-1">
+          <button type="button" onclick="captureLiveGpsLocation()" id="btnGpsLoc" class="w-full py-2.5 bg-blue-50 border border-blue-300 text-blue-700 text-xs font-bold rounded-xl active:scale-95 transition flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-crosshairs text-blue-600 text-sm"></i>
+            <span id="btnGpsText">📍 मेरी लाइव GPS लोकेशन जोड़ें (सटीक डिलीवरी के लिए)</span>
+          </button>
+          <p id="gpsStatusText" class="text-[10px] text-gray-400 mt-1 text-center hidden"></p>
         </div>
       </div>
 
@@ -99,7 +106,7 @@
 
     </div>
 
-    <!-- Live Status Tracking Screen (Hidden Initially) -->
+    <!-- Live Status Tracking Screen -->
     <div id="trackingScreen" class="hidden space-y-4">
       <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-200 text-center space-y-4">
         
@@ -108,17 +115,15 @@
         </div>
 
         <div>
-          <h2 id="statusTitle" class="text-lg font-black text-gray-900">ऑर्डर भेज दिया गया है!</h2>
+          <h2 id="statusTitle" class="text-lg font-black text-gray-900">ऑर्डर दुकान तक पहुँच गया!</h2>
           <p id="statusMsg" class="text-xs text-gray-500 mt-1">दुकानदार द्वारा समय निर्धारित करने की प्रतीक्षा है...</p>
         </div>
 
-        <!-- Timer Countdown -->
         <div id="timerBox" class="hidden bg-orange-50 p-4 rounded-2xl border border-orange-200">
           <span id="lblEtaText" class="text-xs font-bold text-orange-800 uppercase tracking-wider block">पहुँचने का अनुमानित समय</span>
           <span id="etaDisplay" class="text-3xl font-black text-orange-600">15 मिनट</span>
         </div>
 
-        <!-- Order Summary Card -->
         <div class="bg-gray-50 p-4 rounded-xl text-left text-xs space-y-1.5 border border-gray-200">
           <p><b>ऑर्डर:</b> <span id="trackItems"></span></p>
           <p><b>पता:</b> <span id="trackLoc"></span></p>
@@ -128,7 +133,6 @@
         <button onclick="resetOrder()" class="text-xs text-orange-600 font-bold underline pt-2">
           + एक और नया ऑर्डर करें
         </button>
-
       </div>
     </div>
 
@@ -147,6 +151,14 @@
     let currentLang = 'hi';
     let currentOrderId = null;
     let pollInterval = null;
+    let customerGpsCoords = null; // { lat, lng }
+
+    // URL parameters से दुकान की जानकारी पढ़ना
+    const urlParams = new URLSearchParams(window.location.search);
+    const shopNameParam = urlParams.get('name') || 'शर्मा जी टी स्टॉल';
+    const shopPhoneParam = urlParams.get('shop') || '';
+
+    document.getElementById('shopTitleHeader').innerText = shopNameParam;
 
     const menu = [
       { id: 'chai_reg', nameHi: 'कड़क चाय', nameEn: 'Regular Tea', price: 10, count: 0 },
@@ -156,37 +168,77 @@
       { id: 'poha', nameHi: 'पोहा प्लेट', nameEn: 'Poha Plate', price: 25, count: 0 }
     ];
 
+    // LocalStorage Memory: ग्राहक का नाम व पता याद रखना
+    window.onload = function() {
+      const savedName = localStorage.getItem('saarthi_cust_name');
+      const savedPhone = localStorage.getItem('saarthi_cust_phone');
+      const savedLoc = localStorage.getItem('saarthi_cust_loc');
+      if(savedName) document.getElementById('custName').value = savedName;
+      if(savedPhone) document.getElementById('custPhone').value = savedPhone;
+      if(savedLoc) document.getElementById('custLocation').value = savedLoc;
+    };
+
+    // GPS लाइव लोकेशन कैप्चर करना
+    function captureLiveGpsLocation() {
+      const status = document.getElementById('gpsStatusText');
+      const btn = document.getElementById('btnGpsLoc');
+
+      if (!navigator.geolocation) {
+        alert("आपके ब्राउज़र में GPS सपोर्ट नहीं है।");
+        return;
+      }
+
+      btn.classList.add('animate-pulse');
+      document.getElementById('btnGpsText').innerText = "📍 लोकेशन प्राप्त की जा रही है...";
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          customerGpsCoords = { lat, lng };
+
+          btn.classList.remove('animate-pulse', 'bg-blue-50', 'text-blue-700', 'border-blue-300');
+          btn.classList.add('bg-emerald-50', 'text-emerald-800', 'border-emerald-400');
+          document.getElementById('btnGpsText').innerHTML = `✅ GPS लोकेशन सफलतापूर्वक जुड़ गई! <i class="fa-solid fa-check ml-1"></i>`;
+          
+          status.classList.remove('hidden');
+          status.innerText = `अक्षांश: ${lat.toFixed(4)}, देशांतर: ${lng.toFixed(4)}`;
+        },
+        (error) => {
+          btn.classList.remove('animate-pulse');
+          document.getElementById('btnGpsText').innerText = "📍 लोकेशन जोड़ने के लिए दोबारा टैप करें";
+          alert("कृपया अपने मोबाइल में 'Location/GPS' ऑन करें और ब्राउज़र को अनुमति (Allow) दें!");
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+
     const i18n = {
       hi: {
         langBtn: "English",
         shopTitle: "चाय-नाश्ता त्वरित ऑर्डर",
-        shopSub: "दुकान से सीधा आपके ऑफिस/टेबल पर",
+        shopSub: "सीधे आपके ऑफिस/टेबल पर डिलीवरी",
         menuHeading: "मेनू चुनें (Select Items)",
-        customNote: "अन्य कोई निर्देश / स्पेशल ऑर्डर",
-        customNotePh: "उदा. 2 चाय कम शक्कर, 1 बिस्कुट",
-        detailsHeading: "आपका विवरण (Delivery Details)",
+        customNote: "विशेष निर्देश (उदा. कम शक्कर, अदरक ज्यादा)",
+        customNotePh: "उदा. 2 चाय कम शक्कर",
+        detailsHeading: "डिलीवरी का पता व लोकेशन",
         cName: "आपका नाम",
-        cNamePh: "उदा. राहुल भाई",
-        cLoc: "ऑफिस / शॉप / टेबल नंबर",
+        cNamePh: "उदा. राहुल शर्मा",
+        cLoc: "ऑफिस / दुकान / टेबल नंबर",
         cLocPh: "उदा. ऑफिस 204, दूसरी मंजिल",
         cPhone: "WhatsApp नंबर (अपडेट पाने के लिए)",
         totalText: "कुल बिल",
         submitText: "ऑर्डर भेजें",
-        waitingTitle: "ऑर्डर दुकानदार तक पहुँच गया!",
-        waitingSub: "दुकानदार द्वारा समय निर्धारित करने की प्रतीक्षा है...",
-        acceptedTitle: "ऑर्डर स्वीकार हो गया है! 🎉",
-        acceptedSub: "दुकानदार तैयारी कर रहा है...",
-        readyTitle: "तैयार / डिलीवरी के लिए निकल गया! 🚀",
-        etaText: "पहुँचने का अनुमानित समय"
+        gpsBtnText: "📍 मेरी लाइव GPS लोकेशन जोड़ें (सटीक डिलीवरी के लिए)"
       },
       en: {
         langBtn: "हिन्दी",
         shopTitle: "Quick Tea & Snacks Order",
-        shopSub: "Directly delivered to your desk/table",
+        shopSub: "Direct delivery to your desk/table",
         menuHeading: "Select Menu Items",
-        customNote: "Special Instructions / Other Items",
-        customNotePh: "e.g. 2 Tea less sugar, 1 biscuit",
-        detailsHeading: "Delivery Details",
+        customNote: "Special Instructions (e.g. less sugar)",
+        customNotePh: "e.g. 2 Tea less sugar",
+        detailsHeading: "Delivery Address & Location",
         cName: "Your Name",
         cNamePh: "e.g. Rahul Sharma",
         cLoc: "Office / Shop / Table Number",
@@ -194,12 +246,7 @@
         cPhone: "WhatsApp Number (for updates)",
         totalText: "Total Bill",
         submitText: "Place Order",
-        waitingTitle: "Order Sent to Shopkeeper!",
-        waitingSub: "Waiting for shopkeeper to set delivery time...",
-        acceptedTitle: "Order Accepted! 🎉",
-        acceptedSub: "Shopkeeper is preparing your order...",
-        readyTitle: "Out for Delivery / Ready! 🚀",
-        etaText: "Estimated Delivery Time"
+        gpsBtnText: "📍 Add Live GPS Location (For Fast Delivery)"
       }
     };
 
@@ -225,6 +272,9 @@
       document.getElementById('lblCPhone').innerText = t.cPhone;
       document.getElementById('lblTotalText').innerText = t.totalText;
       document.getElementById('btnSubmitText').innerText = t.submitText;
+      if(!customerGpsCoords) {
+        document.getElementById('btnGpsText').innerText = t.gpsBtnText;
+      }
     }
 
     function renderMenu() {
@@ -280,14 +330,25 @@
         return;
       }
       if(!name || !loc) {
-        alert(currentLang === 'hi' ? "कृपया अपना नाम और ऑफिस/टेबल नंबर भरें!" : "Please enter your name and table/office location!");
+        alert(currentLang === 'hi' ? "कृपया अपना नाम और ऑफिस/दुकान नंबर भरें!" : "Please enter your name and table/office location!");
         return;
       }
 
       phone = phone.replace(/[^0-9]/g, '');
       if(phone.length === 10) phone = '91' + phone;
 
-      const fullDetails = `[ग्राहक ऑर्डर] ${itemsList} ${custom ? `(${custom})` : ''} | पता: ${loc}`;
+      // मेमोरी में सेव करें ताकि अगली बार टाइप न करना पड़े
+      localStorage.setItem('saarthi_cust_name', name);
+      localStorage.setItem('saarthi_cust_phone', phone);
+      localStorage.setItem('saarthi_cust_loc', loc);
+
+      // Google Maps Link बनाना
+      let mapsLinkStr = '';
+      if(customerGpsCoords) {
+        mapsLinkStr = ` | 📍 https://www.google.com/maps?q=${customerGpsCoords.lat},${customerGpsCoords.lng}`;
+      }
+
+      const fullDetails = `[ग्राहक ऑर्डर] ${itemsList} ${custom ? `(${custom})` : ''} | पता: ${loc}${mapsLinkStr}`;
 
       const btn = document.getElementById('btnSubmit');
       btn.disabled = true;
@@ -318,7 +379,7 @@
           currentOrderId = created[0].id;
           showTracking(fullDetails, loc, total);
         } else {
-          alert("ऑर्डर सबमिट नहीं हुआ। कृपया दोबारा प्रयास करें।");
+          alert("ऑर्डर सबमिट नहीं हुआ।");
         }
       } catch(err) {
         alert("इंटरनेट एरर: " + err.message);
@@ -336,7 +397,6 @@
       document.getElementById('trackLoc').innerText = loc;
       document.getElementById('trackTotal').innerText = total;
 
-      // लाइव स्टेटस चेक करना (हर 4 सेकंड में)
       pollInterval = setInterval(checkOrderStatus, 4000);
     }
 
@@ -350,24 +410,19 @@
         const data = await res.json();
         if(data && data[0]) {
           const ord = data[0];
-          const t = i18n[currentLang];
           if(ord.status === 'accepted' && ord.eta_minutes > 0) {
-            document.getElementById('statusTitle').innerText = t.acceptedTitle;
-            document.getElementById('statusMsg').innerText = t.acceptedSub;
+            document.getElementById('statusTitle').innerText = "ऑर्डर स्वीकार हो गया है! 🎉";
+            document.getElementById('statusMsg').innerText = "दुकानदार तैयारी कर रहा है...";
             document.getElementById('statusIcon').innerText = "👨‍🍳";
-            document.getElementById('statusIcon').className = "w-20 h-20 mx-auto rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl";
             document.getElementById('timerBox').classList.remove('hidden');
-            document.getElementById('etaDisplay').innerText = `${ord.eta_minutes} ${currentLang === 'hi' ? 'मिनट में तैयार' : 'mins'}`;
+            document.getElementById('etaDisplay').innerText = `${ord.eta_minutes} मिनट में तैयार`;
           } else if(ord.status === 'ready' || ord.status === 'completed') {
-            document.getElementById('statusTitle').innerText = t.readyTitle;
+            document.getElementById('statusTitle').innerText = "तैयार / डिलीवरी के लिए निकल गया! 🚀";
             document.getElementById('statusIcon').innerText = "🚀";
-            document.getElementById('statusIcon').className = "w-20 h-20 mx-auto rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-3xl";
             clearInterval(pollInterval);
           }
         }
-      } catch(e) {
-        console.error(e);
-      }
+      } catch(e) {}
     }
 
     function resetOrder() {
