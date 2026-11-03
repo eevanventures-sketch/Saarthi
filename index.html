@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>सारथी - Saarthi</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>सारथी - Saarthi v3.2</title>
   
   <meta name="theme-color" content="#ea580c">
   <meta name="mobile-web-app-capable" content="yes">
@@ -32,7 +33,7 @@
         <div class="flex items-center space-x-2">
           <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Logo" class="w-7 h-7 bg-white rounded-lg p-0.5 shadow">
           <span class="text-2xl font-black tracking-wide">सारथी</span>
-          <span class="text-[10px] bg-black bg-opacity-30 px-2 py-0.5 rounded-full font-medium uppercase">Saarthi</span>
+          <span class="text-[9px] bg-black bg-opacity-30 px-1.5 py-0.5 rounded-full font-bold">v3.2</span>
         </div>
         <p class="text-[11px] text-orange-100 font-medium">
           दुकान: <span id="hdrShopName" class="font-bold text-white underline">मेरी दुकान</span>
@@ -41,7 +42,7 @@
       
       <!-- Top Action Buttons -->
       <div class="flex items-center space-x-1.5">
-        <button onclick="testVoiceAlert()" title="आवाज़ टेस्ट करें" class="text-xs bg-orange-700 bg-opacity-80 text-white font-bold p-2 rounded-lg active:scale-95 transition shadow-sm">
+        <button onclick="testVoiceAlert()" title="आवाज़ टेस्ट" class="text-xs bg-orange-700 bg-opacity-80 text-white font-bold p-2 rounded-lg active:scale-95 transition shadow-sm">
           <i class="fa-solid fa-volume-high"></i>
         </button>
         <button onclick="openMenuEditor()" title="रेट सेटिंग्स" class="text-xs bg-orange-700 bg-opacity-80 text-white font-bold p-2 rounded-lg active:scale-95 transition shadow-sm">
@@ -260,7 +261,7 @@
           <p class="text-[10px] text-gray-400">Powered by eevaan benchers • 100% Traceable</p>
           <div class="flex justify-between items-center text-[11px] pt-2 text-gray-600 border-t mt-2">
             <span><b>दिनांक:</b> <span id="pdfDate"></span></span>
-            <span><b>प्रकार:</b> <span id="pdfType">दैनिक बिक्री</span></span>
+            <span><b>प्रकार:</b> <span id="pdfType">गल्ला रिपोर्ट</span></span>
           </div>
         </div>
 
@@ -304,42 +305,53 @@
     </div>
   </div>
 
-  <!-- ================= DAILY SUMMARY MODAL ================= -->
-  <div id="dailyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 no-print">
-    <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-4 shadow-xl max-h-[90vh] flex flex-col">
+  <!-- ================= ADVANCED GALLA & DATE FILTER MODAL ================= -->
+  <div id="dailyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-3 no-print">
+    <div class="bg-white rounded-2xl p-4 max-w-sm w-full space-y-3 shadow-xl max-h-[92vh] flex flex-col">
+      
       <div class="flex justify-between items-center border-b pb-2">
         <h3 class="text-sm font-bold text-gray-900 flex items-center">
-          <i class="fa-solid fa-cash-register text-emerald-600 mr-2"></i> आज का गल्ला (Daily Summary)
+          <i class="fa-solid fa-cash-register text-emerald-600 mr-2"></i> दुकान गल्ला (Sales Ledger)
         </h3>
         <button onclick="closeDailySummary()" class="text-gray-400 text-lg font-bold">✕</button>
       </div>
 
+      <!-- Date Period Filter Buttons -->
+      <div class="grid grid-cols-4 gap-1 text-[11px] font-bold">
+        <button onclick="setGallaPeriod('today')" id="periodBtn_today" class="py-1.5 rounded-lg bg-orange-600 text-white shadow-sm">आज</button>
+        <button onclick="setGallaPeriod('yesterday')" id="periodBtn_yesterday" class="py-1.5 rounded-lg bg-gray-100 text-gray-700">कल</button>
+        <button onclick="setGallaPeriod('7days')" id="periodBtn_7days" class="py-1.5 rounded-lg bg-gray-100 text-gray-700">7 दिन</button>
+        <button onclick="setGallaPeriod('30days')" id="periodBtn_30days" class="py-1.5 rounded-lg bg-gray-100 text-gray-700">30 दिन</button>
+      </div>
+
+      <!-- 4 Summary Cards -->
       <div class="grid grid-cols-2 gap-2 text-center">
-        <div class="bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
+        <div class="bg-emerald-50 p-2 rounded-xl border border-emerald-200">
           <span class="text-[10px] text-emerald-800 font-bold block">💵 नकद (Cash)</span>
           <span id="sumCash" class="text-base font-black text-emerald-700">₹0</span>
         </div>
-        <div class="bg-blue-50 p-2.5 rounded-xl border border-blue-200">
+        <div class="bg-blue-50 p-2 rounded-xl border border-blue-200">
           <span class="text-[10px] text-blue-800 font-bold block">📱 UPI पेमेंट</span>
           <span id="sumUpi" class="text-base font-black text-blue-700">₹0</span>
         </div>
-        <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-200">
-          <span class="text-[10px] text-amber-800 font-bold block">📒 आज का उधार</span>
+        <div class="bg-amber-50 p-2 rounded-xl border border-amber-200">
+          <span class="text-[10px] text-amber-800 font-bold block">📒 उधारी बिक्री</span>
           <span id="sumUdhar" class="text-base font-black text-amber-700">₹0</span>
         </div>
-        <div class="bg-orange-50 p-2.5 rounded-xl border border-orange-200">
-          <span class="text-[10px] text-orange-800 font-bold block">🎉 कुल बिक्री</span>
+        <div class="bg-orange-50 p-2 rounded-xl border border-orange-200">
+          <span class="text-[10px] text-orange-800 font-bold block">🎉 कुल प्राप्त इनकम</span>
           <span id="sumTotal" class="text-base font-black text-orange-700">₹0</span>
         </div>
       </div>
 
-      <button onclick="openPdfView('daily')" class="w-full py-2.5 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow active:scale-95 transition flex items-center justify-center space-x-1.5">
-        <i class="fa-solid fa-file-pdf"></i> <span>📄 पूरा हिसाब PDF देखें व डाउनलोड करें</span>
+      <button onclick="openPdfView('daily')" class="w-full py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow active:scale-95 transition flex items-center justify-center space-x-1.5">
+        <i class="fa-solid fa-file-pdf"></i> <span>📄 इस अवधि का PDF हिसाब डाउनलोड करें</span>
       </button>
 
-      <div class="flex-1 overflow-y-auto space-y-2 border-t pt-2">
-        <span class="text-xs font-bold text-gray-700 block">आज के ऑर्डर्स का विवरण:</span>
-        <div id="dailyOrdersList" class="space-y-1.5 text-xs"></div>
+      <!-- Transaction Details -->
+      <div class="flex-1 overflow-y-auto space-y-1.5 border-t pt-2">
+        <span class="text-[11px] font-bold text-gray-700 block">बिक्री एवं वसूली का पूरा विवरण:</span>
+        <div id="dailyOrdersList" class="space-y-1 text-xs"></div>
       </div>
 
       <button onclick="closeDailySummary()" class="w-full py-2 bg-gray-800 text-white text-xs font-bold rounded-xl">
@@ -374,7 +386,29 @@
     </div>
   </div>
 
-  <!-- ================= EDIT ORDER ON DELIVERY MODAL ================= -->
+  <!-- ================= KHATA SETTLEMENT PAYMENT MODAL (उधारी वसूली) ================= -->
+  <div id="settleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-4 shadow-xl text-center">
+      <h3 class="text-base font-bold text-gray-900">उधारी का पैसा किसमें मिला?</h3>
+      <p id="settleCustomerName" class="text-xs text-gray-500 font-bold"></p>
+      <p id="settleAmount" class="text-2xl font-black text-emerald-600">₹0</p>
+      
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="executeKhataSettlement('cash')" class="p-3 bg-emerald-50 border-2 border-emerald-400 rounded-xl text-emerald-800 text-xs font-bold active:scale-95 transition flex flex-col items-center">
+          <i class="fa-solid fa-money-bill-1-wave text-2xl mb-1 text-emerald-600"></i> <span>💵 नकद (Cash मिला)</span>
+        </button>
+        <button onclick="executeKhataSettlement('upi')" class="p-3 bg-blue-50 border-2 border-blue-400 rounded-xl text-blue-800 text-xs font-bold active:scale-95 transition flex flex-col items-center">
+          <i class="fa-solid fa-qrcode text-2xl mb-1 text-blue-600"></i> <span>📱 UPI (ऑनलाइन मिला)</span>
+        </button>
+      </div>
+
+      <input type="hidden" id="settleKey">
+      <input type="hidden" id="settleRawAmount">
+      <button onclick="closeSettleModal()" class="text-xs text-gray-400 font-semibold underline">रद्द करें</button>
+    </div>
+  </div>
+
+  <!-- ================= EDIT ORDER MODAL ================= -->
   <div id="editOrderModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 no-print">
     <div class="bg-white rounded-2xl p-5 max-w-sm w-full space-y-4 shadow-xl">
       <div class="flex justify-between items-center border-b pb-2">
@@ -385,7 +419,7 @@
       </div>
 
       <div>
-        <label class="text-xs font-semibold text-gray-600">ऑर्डर विवरण (उदा. 4 की जगह 5 चाय)</label>
+        <label class="text-xs font-semibold text-gray-600">ऑर्डर विवरण</label>
         <input id="editOrderDetails" type="text" class="w-full mt-1 p-2 text-sm border rounded-xl outline-none focus:ring-2 focus:ring-orange-500">
       </div>
 
@@ -410,6 +444,7 @@
     let audioContext = null;
     let khataSubTab = 'pending';
     let audioInitialized = false;
+    let activeGallaPeriod = 'today'; // 'today', 'yesterday', '7days', '30days'
 
     // Local Storage Stores
     let localKhata = JSON.parse(localStorage.getItem('saarthi_local_khata')) || [];
@@ -461,12 +496,34 @@
 
     function testVoiceAlert() {
       initAudioOnUserGesture();
-      speakOrderAlert({ customer_name: currentLang === 'hi' ? 'राहुल शर्मा' : 'Rahul Sharma' });
+      speakOrderAlert({ customer_name: 'राहुल शर्मा' });
+    }
+
+    // Google Maps Link Parser (100% Reliable Detection)
+    function extractMapsUrl(details) {
+      if(!details) return null;
+      const match = details.match(/https?:\/\/[^\s<"']+/i);
+      if(match && match[0].includes('google.com/maps')) {
+        return match[0].trim();
+      }
+      return null;
+    }
+
+    // Delivery Boy WhatsApp Dispatch
+    function dispatchToDeliveryBoy(custName, custPhone, details, amount, mapsUrl) {
+      const boyPhone = prompt("डिलीवरी बॉय का WhatsApp नंबर दर्ज करें (10 अंक):");
+      if(!boyPhone || boyPhone.trim().length < 10) return;
+
+      const cleanPhone = '91' + boyPhone.replace(/[^0-9]/g, '').slice(-10);
+      const cleanDetails = details.replace(/\|?\s*📍\s*https?:\/\/[^\s]+/gi, '').trim();
+      const mapsText = mapsUrl ? `\n\n📍 *गूगल मैप रास्ता (क्लिक करें):*\n${mapsUrl}` : '';
+
+      const msg = encodeURIComponent(`🛵 *नया डिलीवरी टास्क - ${shopProfile.name}*\n\n👤 *ग्राहक:* ${custName}\n📞 *नंबर:* ${custPhone}\n📦 *सामान:* ${cleanDetails}\n💰 *लेने वाली रकम:* ₹${amount}${mapsText}\n\nतुरंत पहुँचाओ!`);
+      window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
     }
 
     // Dynamic Items Billing Rows
     let rowCounter = 0;
-
     function addItemRow(initialName = '', initialQty = 1, initialPrice = 10) {
       rowCounter++;
       const container = document.getElementById('itemRowsContainer');
@@ -547,26 +604,6 @@
         if(qty > 0) items.push(`${qty}x ${itemName} (₹${qty * rate})`);
       });
       return items.join(', ');
-    }
-
-    // Google Maps Link Parser (100% सटीक डिटेक्शन)
-    function extractMapsUrl(details) {
-      if(!details) return null;
-      const match = details.match(/https?:\/\/(www\.)?google\.com\/maps[^\s<"]+/i);
-      return match ? match[0] : null;
-    }
-
-    // Delivery Boy WhatsApp Dispatch
-    function dispatchToDeliveryBoy(custName, custPhone, details, amount, mapsUrl) {
-      const boyPhone = prompt("डिलीवरी बॉय का WhatsApp नंबर दर्ज करें (10 अंक):");
-      if(!boyPhone || boyPhone.trim().length < 10) return;
-
-      const cleanPhone = '91' + boyPhone.replace(/[^0-9]/g, '').slice(-10);
-      const cleanDetails = details.replace(/\|?\s*📍\s*https?:\/\/[^\s]+google\.com\/maps[^\s]+/gi, '').trim();
-      const mapsText = mapsUrl ? `\n\n📍 *गूगल मैप रास्ता:* ${mapsUrl}` : '';
-
-      const msg = encodeURIComponent(`🛵 *नया डिलीवरी टास्क - ${shopProfile.name}*\n\n👤 *ग्राहक:* ${custName}\n📞 *नंबर:* ${custPhone}\n📦 *सामान:* ${cleanDetails}\n💰 *लेने वाली रकम:* ₹${amount}${mapsText}\n\nतुरंत पहुँचाओ!`);
-      window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
     }
 
     // Menu Settings
@@ -763,17 +800,18 @@
         container.innerHTML = activeOrders.map(o => {
           const isPending = o.status === 'pending';
           const mapsUrl = extractMapsUrl(o.order_details);
-          const cleanDetails = o.order_details.replace(/\|?\s*📍\s*https?:\/\/[^\s]+google\.com\/maps[^\s]+/gi, '').trim();
+          const cleanDetails = o.order_details.replace(/\|?\s*📍\s*https?:\/\/[^\s]+/gi, '').trim();
 
-          // बड़ा चमकीला गूगल मैप्स बटन
+          // बड़ा स्पष्ट और चमकीला गूगल मैप्स नेविगेशन बटन
           const mapButtonFull = mapsUrl ? `
-            <a href="${mapsUrl}" target="_blank" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center space-x-2 active:scale-95 transition">
-              <i class="fa-solid fa-diamond-turn-right text-base text-yellow-300"></i>
-              <span>📍 ग्राहक की लोकेशन (गूगल मैप पर रास्ता देखें)</span>
+            <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" 
+              class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center space-x-2 transition my-1 border-2 border-blue-400">
+              <span class="text-base text-yellow-300">📍</span>
+              <span>गूगल मैप नेविगेशन (सीधा रास्ता देखें)</span>
+              <span class="text-[10px] bg-white bg-opacity-20 px-1.5 py-0.5 rounded">OPEN MAP</span>
             </a>
           ` : '';
 
-          // कॉल व लड़के को भेजने के बटन
           const helperActionButtons = `
             <div class="grid grid-cols-2 gap-2 pt-1 border-t border-amber-200/60">
               <a href="tel:${o.customer_phone || ''}" class="py-2 bg-white text-gray-800 text-xs font-bold rounded-xl border border-gray-300 flex items-center justify-center space-x-1 active:scale-95 transition">
@@ -802,7 +840,7 @@
                   </span>
                 </div>
 
-                <div class="bg-white p-3 rounded-xl border border-amber-200 text-xs font-bold text-gray-800 space-y-2.5">
+                <div class="bg-white p-3 rounded-xl border border-amber-200 text-xs font-bold text-gray-800 space-y-2">
                   <p class="text-sm font-bold text-gray-900">${cleanDetails}</p>
                   ${mapButtonFull}
                   ${helperActionButtons}
@@ -839,7 +877,7 @@
                 </div>
               </div>
 
-              <div class="bg-amber-50/70 p-2.5 rounded-xl text-xs text-gray-800 border border-amber-100 space-y-2.5">
+              <div class="bg-amber-50/70 p-2.5 rounded-xl text-xs text-gray-800 border border-amber-100 space-y-2">
                 <div class="flex justify-between items-center">
                   <span class="font-bold text-amber-900 text-xs">${cleanDetails}</span>
                   <button onclick="openEditOrder('${o.id}', '${cleanDetails}', '${o.amount}')" class="text-[11px] bg-white border border-amber-300 text-amber-800 px-2 py-1 rounded-lg font-bold shadow-sm">
@@ -945,7 +983,54 @@
       alert(mode === 'cash' ? "नकद भुगतान पूरा हुआ! गल्ले में जुड़ गया।" : mode === 'upi' ? "UPI भुगतान पूरा हुआ! गल्ले में जुड़ गया।" : "उधारी खाते में सफलतापूर्वक जुड़ गया!");
     }
 
-    // Khata Ledger
+    // ================= KHATA SETTLEMENT & RECOVERY INTO INCOME =================
+    function promptSettlePayment(key, name, total) {
+      document.getElementById('settleKey').value = key;
+      document.getElementById('settleRawAmount').value = total;
+      document.getElementById('settleCustomerName').innerText = `${name} का बकाया हिसाब चुकता करें`;
+      document.getElementById('settleAmount').innerText = `₹${total}`;
+      document.getElementById('settleModal').classList.remove('hidden');
+    }
+
+    function closeSettleModal() {
+      document.getElementById('settleModal').classList.add('hidden');
+    }
+
+    function executeKhataSettlement(receivedMode) {
+      const key = document.getElementById('settleKey').value;
+      const total = parseInt(document.getElementById('settleRawAmount').value) || 0;
+      const name = document.getElementById('settleCustomerName').innerText.split(' ')[0];
+
+      // 1. उधारी खाते से हटायें
+      localKhata = localKhata.filter(o => (o.customer_phone || o.customer_name) !== key);
+      localStorage.setItem('saarthi_local_khata', JSON.stringify(localKhata));
+
+      // 2. चुकता इतिहास में डालें
+      localSettled.push({
+        name: name,
+        key: key,
+        amount: total,
+        mode: receivedMode,
+        settled_at: new Date().toISOString()
+      });
+      localStorage.setItem('saarthi_local_settled', JSON.stringify(localSettled));
+
+      // 3. जादू: आज की नकद/UPI इनकम और गल्ले में जोड़ें!
+      localCompleted.push({
+        id: 'settle_' + Date.now(),
+        customer_name: `${name} (उधारी वसूली)`,
+        order_details: `पुराना उधारी खाता चुकता हुआ (${receivedMode.toUpperCase()})`,
+        amount: total,
+        payment_status: receivedMode,
+        completed_at: new Date().toISOString()
+      });
+      localStorage.setItem('saarthi_local_completed', JSON.stringify(localCompleted));
+
+      closeSettleModal();
+      alert(`₹${total} का उधारी हिसाब चुकता हो गया और आज के ${receivedMode === 'cash' ? 'नकद (Cash)' : 'UPI'} गल्ले में जुड़ गया!`);
+      loadKhataLedger();
+    }
+
     function loadKhataLedger() {
       const container = document.getElementById('khataContainer');
 
@@ -962,7 +1047,7 @@
             khataByCust[key] = { name: o.customer_name, phone: o.customer_phone, total: 0, items: [] };
           }
           khataByCust[key].total += (parseInt(o.amount) || 0);
-          khataByCust[key].items.push(`• ${formatDisplayDate(o.completed_at)}: ${o.order_details} (₹${o.amount})`);
+          khataByCust[key].items.push(`• ${formatDisplayDate(o.completed_at)}: ${o.order_details.replace(/\|?\s*📍\s*https?:\/\/[^\s]+/gi, '')} (₹${o.amount})`);
         });
 
         container.innerHTML = Object.values(khataByCust).map(c => `
@@ -991,7 +1076,7 @@
                 class="py-2 bg-purple-600 text-white text-[11px] font-bold rounded-xl shadow flex items-center justify-center space-x-1">
                 <i class="fa-solid fa-file-pdf"></i> <span>PDF</span>
               </button>
-              <button onclick="markKhataPaid('${c.phone || c.name}', '${c.name}', ${c.total})" 
+              <button onclick="promptSettlePayment('${c.phone || c.name}', '${c.name}', ${c.total})" 
                 class="py-2 bg-blue-600 text-white text-[11px] font-bold rounded-xl shadow flex items-center justify-center space-x-1">
                 <i class="fa-solid fa-check"></i> <span>चुकता</span>
               </button>
@@ -1009,7 +1094,7 @@
           <div class="bg-white rounded-2xl p-3 shadow-sm border border-emerald-100 flex justify-between items-center">
             <div>
               <span class="font-bold text-gray-800 text-xs">${s.name}</span>
-              <span class="text-gray-400 text-[10px] block">चुकता दिनांक: ${formatDisplayDate(s.settled_at)}</span>
+              <span class="text-gray-400 text-[10px] block">चुकता दिनांक: ${formatDisplayDate(s.settled_at)} (${s.mode ? s.mode.toUpperCase() : 'CASH'})</span>
             </div>
             <div class="text-right">
               <span class="text-xs font-black text-emerald-700 block">₹${s.amount} Paid</span>
@@ -1020,30 +1105,110 @@
       }
     }
 
-    function markKhataPaid(key, name, total) {
-      if(!confirm(`${name} का ₹${total} का सारा बकाया हिसाब चुकता (Paid) मार्क करें?`)) return;
-
-      localSettled.push({
-        name: name,
-        key: key,
-        amount: total,
-        settled_at: new Date().toISOString()
-      });
-      localStorage.setItem('saarthi_local_settled', JSON.stringify(localSettled));
-
-      localKhata = localKhata.filter(o => (o.customer_phone || o.customer_name) !== key);
-      localStorage.setItem('saarthi_local_khata', JSON.stringify(localKhata));
-
-      alert(`${name} का हिसाब चुकता हो गया और 'चुकता इतिहास' में चला गया!`);
-      loadKhataLedger();
-    }
-
     function sendKhataStatement(name, phone, total, items) {
       if(!phone) { alert("फोन नंबर उपलब्ध नहीं है!"); return; }
       const itemsText = items.join('\n');
       const msg = encodeURIComponent(`नमस्ते ${name} जी! 🙏\n*${shopProfile.name} - आपका उधारी खाता विवरण*\n\n${itemsText}\n\n-------------------------------\n💰 *कुल बकाया राशि: ₹${total}*\n\nकृपया सुविधा अनुसार भुगतान करें। धन्यवाद!\n*सारथी • eevaan benchers*`);
       window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
     }
+
+    // ================= SMART GALLA WITH DATE PERIOD FILTERS =================
+    function setGallaPeriod(period) {
+      activeGallaPeriod = period;
+      ['today', 'yesterday', '7days', '30days'].forEach(p => {
+        const btn = document.getElementById(`periodBtn_${p}`);
+        if(p === period) {
+          btn.className = "py-1.5 rounded-lg bg-orange-600 text-white shadow-sm font-bold";
+        } else {
+          btn.className = "py-1.5 rounded-lg bg-gray-100 text-gray-700 font-bold";
+        }
+      });
+      renderGallaContent();
+    }
+
+    function renderGallaContent() {
+      const now = new Date();
+      const todayDateStr = now.toISOString().slice(0, 10);
+
+      const yesterday = new Date(now);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayDateStr = yesterday.toISOString().slice(0, 10);
+
+      const sevenDaysAgo = new Date(now);
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+      const thirtyDaysAgo = new Date(now);
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const filteredOrders = localCompleted.filter(o => {
+        if(!o.completed_at) return false;
+        const orderDateStr = o.completed_at.slice(0, 10);
+        const orderTime = new Date(o.completed_at).getTime();
+
+        if(activeGallaPeriod === 'today') {
+          return orderDateStr === todayDateStr;
+        } else if(activeGallaPeriod === 'yesterday') {
+          return orderDateStr === yesterdayDateStr;
+        } else if(activeGallaPeriod === '7days') {
+          return orderTime >= sevenDaysAgo.getTime();
+        } else if(activeGallaPeriod === '30days') {
+          return orderTime >= thirtyDaysAgo.getTime();
+        }
+        return true;
+      });
+
+      let cash = 0, upi = 0, udhar = 0, totalIncome = 0;
+      filteredOrders.forEach(o => {
+        const amt = parseInt(o.amount) || 0;
+        if(o.payment_status === 'cash') {
+          cash += amt;
+          totalIncome += amt;
+        } else if(o.payment_status === 'upi') {
+          upi += amt;
+          totalIncome += amt;
+        } else if(o.payment_status === 'udhar') {
+          udhar += amt;
+        }
+      });
+
+      document.getElementById('sumCash').innerText = `₹${cash}`;
+      document.getElementById('sumUpi').innerText = `₹${upi}`;
+      document.getElementById('sumUdhar').innerText = `₹${udhar}`;
+      document.getElementById('sumTotal').innerText = `₹${totalIncome}`;
+
+      const listContainer = document.getElementById('dailyOrdersList');
+      if (filteredOrders.length === 0) {
+        listContainer.innerHTML = `<p class="text-gray-400 text-center py-4">इस अवधि में कोई बिक्री रिकॉर्ड नहीं है।</p>`;
+      } else {
+        listContainer.innerHTML = filteredOrders.map(o => {
+          const amt = parseInt(o.amount) || 0;
+          const badge = o.payment_status === 'cash' 
+            ? `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold text-[10px]">💵 Cash</span>`
+            : o.payment_status === 'upi'
+            ? `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold text-[10px]">📱 UPI</span>`
+            : `<span class="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-bold text-[10px]">📒 उधार</span>`;
+
+          return `
+            <div class="p-2 bg-gray-50 rounded-lg border border-gray-200 flex justify-between items-center">
+              <div>
+                <span class="font-bold text-gray-800">${o.customer_name}</span>
+                <span class="text-gray-400 text-[10px] block">${formatDisplayDate(o.completed_at)} • ${o.order_details.replace(/\|?\s*📍\s*https?:\/\/[^\s]+/gi, '')}</span>
+              </div>
+              <div class="text-right">
+                <span class="font-black text-gray-900 block">₹${amt}</span>
+                ${badge}
+              </div>
+            </div>
+          `;
+        }).reverse().join('');
+      }
+    }
+
+    function openDailySummary() {
+      setGallaPeriod('today');
+      document.getElementById('dailyModal').classList.remove('hidden');
+    }
+    function closeDailySummary() { document.getElementById('dailyModal').classList.add('hidden'); }
 
     // PDF Statement View
     function openPdfView(type, custName = '', custTotal = 0) {
@@ -1054,7 +1219,7 @@
       let cash = 0, upi = 0, udhar = 0, total = 0;
 
       if (type === 'daily') {
-        document.getElementById('pdfType').innerText = "दैनिक गल्ला रिपोर्ट";
+        document.getElementById('pdfType').innerText = `गल्ला रिपोर्ट (${activeGallaPeriod === 'today' ? 'आज' : activeGallaPeriod === 'yesterday' ? 'कल' : activeGallaPeriod})`;
         
         if (localCompleted.length === 0) {
           tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-400">कोई रिकॉर्ड नहीं</td></tr>`;
@@ -1069,7 +1234,7 @@
             return `
               <tr class="border-b border-gray-100">
                 <td class="py-2"><b>${o.customer_name}</b><br><span class="text-[10px] text-gray-400">${formatDisplayDate(o.completed_at)}</span></td>
-                <td class="py-2">${o.order_details}</td>
+                <td class="py-2">${o.order_details.replace(/\|?\s*📍\s*https?:\/\/[^\s]+/gi, '')}</td>
                 <td class="py-2 text-center uppercase font-bold text-[10px]">${o.payment_status}</td>
                 <td class="py-2 text-right font-black">₹${amt}</td>
               </tr>
@@ -1087,7 +1252,7 @@
           return `
             <tr class="border-b border-gray-100">
               <td class="py-2"><b>${custName}</b><br><span class="text-[10px] text-gray-400">${formatDisplayDate(o.completed_at)}</span></td>
-              <td class="py-2">${o.order_details}</td>
+              <td class="py-2">${o.order_details.replace(/\|?\s*📍\s*https?:\/\/[^\s]+/gi, '')}</td>
               <td class="py-2 text-center font-bold text-[10px] text-amber-700">उधार</td>
               <td class="py-2 text-right font-black">₹${amt}</td>
             </tr>
@@ -1106,51 +1271,6 @@
     function closePdfModal() { document.getElementById('pdfModal').classList.add('hidden'); }
     function triggerPrintPdf() { window.print(); }
 
-    // Daily Summary
-    function openDailySummary() {
-      let cash = 0, upi = 0, udhar = 0, total = 0;
-      const listContainer = document.getElementById('dailyOrdersList');
-
-      if (localCompleted.length === 0) {
-        listContainer.innerHTML = `<p class="text-gray-400 text-center py-4">आज अभी कोई ऑर्डर पूरा नहीं हुआ है।</p>`;
-      } else {
-        listContainer.innerHTML = localCompleted.map(o => {
-          const amt = parseInt(o.amount) || 0;
-          total += amt;
-          if(o.payment_status === 'cash') cash += amt;
-          else if(o.payment_status === 'upi') upi += amt;
-          else if(o.payment_status === 'udhar') udhar += amt;
-
-          const badge = o.payment_status === 'cash' 
-            ? `<span class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold text-[10px]">💵 Cash</span>`
-            : o.payment_status === 'upi'
-            ? `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold text-[10px]">📱 UPI</span>`
-            : `<span class="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-bold text-[10px]">📒 उधार</span>`;
-
-          return `
-            <div class="p-2 bg-gray-50 rounded-lg border border-gray-200 flex justify-between items-center">
-              <div>
-                <span class="font-bold text-gray-800">${o.customer_name}</span>
-                <span class="text-gray-400 text-[10px] block">${formatDisplayDate(o.completed_at)}</span>
-              </div>
-              <div class="text-right">
-                <span class="font-black text-gray-900 block">₹${amt}</span>
-                ${badge}
-              </div>
-            </div>
-          `;
-        }).reverse().join('');
-      }
-
-      document.getElementById('sumCash').innerText = `₹${cash}`;
-      document.getElementById('sumUpi').innerText = `₹${upi}`;
-      document.getElementById('sumUdhar').innerText = `₹${udhar}`;
-      document.getElementById('sumTotal').innerText = `₹${total}`;
-
-      document.getElementById('dailyModal').classList.remove('hidden');
-    }
-    function closeDailySummary() { document.getElementById('dailyModal').classList.add('hidden'); }
-
     async function acceptCustomerOrder(id, mins, name, phone, details, amount) {
       const targetUrl = await getOrdersUrl();
       await fetch(`${targetUrl}?id=eq.${id}`, {
@@ -1160,7 +1280,7 @@
       });
 
       if(phone) {
-        const cleanDetails = details.replace(/\|?\s*📍\s*https?:\/\/[^\s]+google\.com\/maps[^\s]+/gi, '').trim();
+        const cleanDetails = details.replace(/\|?\s*📍\s*https?:\/\/[^\s]+/gi, '').trim();
         const msg = encodeURIComponent(`नमस्ते ${name} जी! 🙏\n*${shopProfile.name}* द्वारा आपका ऑर्डर स्वीकार कर लिया गया है।\n\n📌 *ऑर्डर:* ${cleanDetails}\n⏱️ *पहुँचने का समय:* अगले *${mins} मिनट* में!\n💰 *बिल:* ₹${amount}\n\nधन्यवाद! — *सारथी*`);
         window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
       }
@@ -1231,4 +1351,4 @@
     setInterval(fetchOrders, 4000);
   </script>
 </body>
-</html>
+  </html>
